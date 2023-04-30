@@ -1,0 +1,30 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        ".env.example": true,
+        ".vscode": true,
+        "next-env.d.ts": true,
+        "package-lock.json": true,
+        "postcss.config.cjs": true,
+        "prettier.config.cjs": true,
+        "README.md": true,
+        "my-erd.plantuml": true,
+        "public": true
+    },
+    "hide-files.files": [
+        ".env.example",
+        ".vscode",
+        "next-env.d.ts",
+        "package-lock.json",
+        "postcss.config.cjs",
+        "prettier.config.cjs",
+        "README.md",
+        "my-erd.plantuml",
+        "public"
+    ]
+}

@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  categoryId       String     @id @db.Uuid
+  categoryName     String     @db.VarChar(255)
+  parentCategoryId String?    @db.Uuid
+  parentCategory   Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [categoryId])
+  childCategory    Category[] @relation("ParentCategory")
+  products         Product[]
+}
+
+model Product {
+  productId       String            @id @db.Uuid
+  vendorCode      String            @db.VarChar(50)
+  productName     String            @db.VarChar(150)
+  description     String            @db.VarChar(10000)
+  weight          String            @db.VarChar(120)
+  size            String            @db.VarChar(120)
+  price           Int
+  productImg      String
+  categoryId      String            @db.Uuid
+  category        Category          @relation(fields: [categoryId], references: [categoryId])
+  productsInCart  ProductsInCart[]
+  productsOfOrder productsOfOrder[]
+}
+
+model Order {
+  orderId         String            @id @default(uuid()) @db.Uuid
+  deliveryDate    DateTime?         @db.Date
+  summ            Int
+  clientId        String            @db.Uuid
+  managerId       String?           @db.Uuid
+  client          Client            @relation(fields: [clientId], references: [clientId])
+  manager         Manager?          @relation(fields: [managerId], references: [managerId])
+  productsOfOrder productsOfOrder[]
+}
+
+model ProductsInCart {
+  clientId  String  @db.Uuid
+  productId String  @db.Uuid
+  client    Client  @relation(fields: [clientId], references: [clientId])
+  product   Product @relation(fields: [productId], references: [productId])
+  amount    Int
+
+  @@id([clientId, productId])
+}
+
+model productsOfOrder {
+  productId String  @db.Uuid
+  orderId   String  @db.Uuid  @default(uuid())
+  product   Product @relation(fields: [productId], references: [productId])
+  order     Order   @relation(fields: [orderId], references: [orderId])
+  amount    Int
+
+  @@id([productId, orderId])
+}
+
+model Client {
+  clientId        String            @id @default(uuid()) @db.Uuid
+  fullName        String            @db.VarChar(120)
+  phone           String            @db.VarChar(25)
+  email           String            @unique @db.VarChar(100)
+  login           String            @unique
+  password        String
+  clientInCompany ClientInCompany[]
+  orders          Order[]
+  productsInCart  ProductsInCart[]
+}
+
+model Company {
+  companyId       String            @id @db.Uuid
+  clientInCompany ClientInCompany[]
+}
+
+model ClientInCompany {
+  clientId  String  @db.Uuid
+  companyId String  @db.Uuid
+  client    Client  @relation(fields: [clientId], references: [clientId])
+  company   Company @relation(fields: [companyId], references: [companyId])
+
+  @@id([clientId, companyId])
+}
+
+model Manager {
+  managerId String  @id @db.Uuid
+  fullName  String  @db.VarChar(120)
+  phone     String  @db.VarChar(25)
+  email     String  @db.VarChar(100)
+  orders    Order[]
+}
