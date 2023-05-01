@@ -7,10 +7,11 @@ import UserContext from "~/Context/UserContext";
 import { useEffect, useState } from "react";
 import { Client } from "@prisma/client";
 import { clientSchema } from "~/schemas/client";
+import Layout from "~/components/layout";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const initialState: Client | null = null;
-  const [client, setClient] = useState<Client | null>(initialState);  
+  const [client, setClient] = useState<Client | null>(null);  
 
   useEffect(() => {
     let client: Client | null = null;
@@ -33,7 +34,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <UserContext.Provider value={{client: client, setter: setClient}}>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </UserContext.Provider>
   )
   

@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-
-    body {
-        @apply bg-primary text-slate-100 overflow-y-scroll;
+    body {        
+        @apply bg-gray-200 text-xl font-garamond p-0 m-0                        
+        
     }
 }

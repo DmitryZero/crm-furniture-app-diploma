@@ -14,7 +14,8 @@
         "prettier.config.cjs": true,
         "README.md": true,
         "my-erd.plantuml": true,
-        "public": true
+        "node_modules": true,
+        ".next": true
     },
     "hide-files.files": [
         ".env.example",
@@ -25,6 +26,7 @@
         "prettier.config.cjs",
         "README.md",
         "my-erd.plantuml",
-        "public"
+        "node_modules",
+        ".next"
     ]
 }

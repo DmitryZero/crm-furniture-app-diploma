@@ -11,7 +11,7 @@ export default {
       },      
       fontFamily: {
         'titillium-web': ['Titillium', 'sans-serif'],
-        'test': ['Delicious Handrawn', 'cursive']
+        'garamond': ['Garamond', 'serif']
       }
     },    
   },
