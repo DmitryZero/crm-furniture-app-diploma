@@ -4,12 +4,12 @@ import { createContext } from "react";
 
 interface IUserContext {
     client: Client | null;
-    setter: Dispatch<SetStateAction<Client | null>> | null
+    clientSetter: Dispatch<SetStateAction<Client | null>> | null
 }
 
 const UserContext = createContext<IUserContext>({
     client: null,
-    setter: null
+    clientSetter: null,
 });
 
 export default UserContext;

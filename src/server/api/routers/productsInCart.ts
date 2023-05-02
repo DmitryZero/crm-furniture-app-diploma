@@ -111,5 +111,19 @@ export const productsInCartRouter = createTRPCRouter({
             products.every((product, index) => summ += product.price * (productsInCart[index]?.amount || 0));
 
             return summ;
+        }),
+    getTotalAmountsOfProductsByClient: publicProcedure
+        .input(z.object({
+            clientId: z.string().uuid()
+        }))
+        .query(async ({ input, ctx }) => {
+            const items = await ctx.prisma.productsInCart.findMany({
+                where: {
+                    clientId: input.clientId
+                }
+            });
+
+            const amount = items && items.length > 0 ? items.reduce((summ, current) => summ += current.amount, 0) : 0;
+            return amount;
         })
 });

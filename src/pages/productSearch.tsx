@@ -4,7 +4,7 @@ import ProductCard from "~/components/products/ProductCard";
 import ProductsFilterCard from "~/components/products/ProductsFilterCard";
 import { api } from "~/utils/api";
 
-const Home: NextPage = () => {
+const ProductSearchPage: NextPage = () => {
   const products = api.product.getAll.useQuery();
 
   return (
@@ -18,14 +18,12 @@ const Home: NextPage = () => {
           <div className="col-span-3">
             <ProductsFilterCard />
           </div>
-          <div className="col-span-9 grid grid-cols-3 gap-5">
+          <div className="col-span-9 grid grid-cols-3 gap-5 auto-rows-fr">
             {products && products.data?.map(product => {
               return (
-                <>
-                  <ProductCard product={product}/>
-                </>
+                <ProductCard key={product.productId} product={product} />
               )
-            })}            
+            })}
           </div>
         </div>
       </main>
@@ -33,4 +31,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default ProductSearchPage;

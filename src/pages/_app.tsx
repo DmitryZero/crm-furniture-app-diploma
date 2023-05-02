@@ -11,7 +11,7 @@ import Layout from "~/components/layout";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const initialState: Client | null = null;
-  const [client, setClient] = useState<Client | null>(null);  
+  const [client, setClient] = useState<Client | null>(null);
 
   useEffect(() => {
     let client: Client | null = null;
@@ -19,7 +19,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       const parseResult = clientSchema.safeParse(JSON.parse(localStorage.getItem('client')!));
       if (parseResult.success) client = parseResult.data;
       else throw new Error("_app.tsx Client in localStorage is invalid");
-    } 
+    }
 
     if (client) {
       setClient(client);
@@ -33,14 +33,14 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   }, [client]);
 
   return (
-    <UserContext.Provider value={{client: client, setter: setClient}}>
+    <UserContext.Provider value={{ client: client, clientSetter: setClient}}>
       <Layout>
         <Component {...pageProps} />
       </Layout>
     </UserContext.Provider>
   )
-  
-  
+
+
 };
 
 export default api.withTRPC(MyApp);
