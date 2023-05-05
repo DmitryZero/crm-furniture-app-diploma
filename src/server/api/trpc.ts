@@ -30,8 +30,12 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+const createInnerTRPCContext = (_opts: CreateNextContextOptions) => {
+  const {req, res} = _opts;
+  
   return {
+    req,
+    res,
     prisma,
   };
 };
@@ -42,25 +46,8 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
-  // const { req } = _opts;
-
-  // async function getUserFromHeader() {
-  //   if (req.headers.authorization) {
-  //     // const user = await decodeAndVerifyJwtToken(
-  //     //   req.headers.authorization.split(' ')[1],
-  //     // );
-  //     return null;
-  //   }
-  //   return null;
-  // }
-  // const user = await getUserFromHeader();
-
-  // return {
-  //   user,
-  //   prisma
-  // }
+export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+  return createInnerTRPCContext(_opts);  
 };
 
 /**
@@ -111,18 +98,18 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-// const isAuthed = t.middleware((opts) => {
-//   const { ctx } = opts;
-//   if (!ctx.user) {
-//     throw new TRPCError({ code: 'UNAUTHORIZED' });
-//   }
-//   return opts.next({
-//     ctx: {
-//       user: ctx.user,
-//       prisma
-//     },
-//   });
-// });
+const isAuthed = t.middleware(async ({next, ctx}) => {  
+  const {req, res} = ctx;
+  
+  const accessToken = req.headers.authorization?.split(' ')[1];
+  if (!accessToken) throw new TRPCError({code: 'UNAUTHORIZED', message: "AccessToken не указан"});
 
-// export const protectedProcedure = t.procedure.use(isAuthed);
+  return next({
+    ctx: {      
+      prisma
+    },
+  });
+});
+
+export const protectedProcedure = t.procedure.use(isAuthed);
 
