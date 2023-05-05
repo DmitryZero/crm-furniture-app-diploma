@@ -8,9 +8,8 @@ import Link from "next/link";
 import AddToCartBtn from "~/components/AddToCartBtn";
 
 const ProductPage: NextPage = () => {
-  const router = useRouter()
-  let { productId } = router.query
-  let isEnabled = true;
+  let {productId} = useRouter().query
+  let isEnabled = true;  
 
   if (!productId || typeof productId != 'string') {
     productId = "";

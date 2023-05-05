@@ -41,11 +41,11 @@ export const categoryRouter = createTRPCRouter({
         .input(z.object({
             parentId: z.string()
         }))
-        .query(({ ctx, input }) => {
+        .query(({ ctx, input }) => {            
             return ctx.prisma.category.findMany({
                 where: {
                     parentCategoryId: input.parentId
                 }
             })
-        })
+        })    
 });

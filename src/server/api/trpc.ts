@@ -42,8 +42,25 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+export const createTRPCContext = async (_opts: CreateNextContextOptions) => {
   return createInnerTRPCContext({});
+  // const { req } = _opts;
+
+  // async function getUserFromHeader() {
+  //   if (req.headers.authorization) {
+  //     // const user = await decodeAndVerifyJwtToken(
+  //     //   req.headers.authorization.split(' ')[1],
+  //     // );
+  //     return null;
+  //   }
+  //   return null;
+  // }
+  // const user = await getUserFromHeader();
+
+  // return {
+  //   user,
+  //   prisma
+  // }
 };
 
 /**
@@ -53,7 +70,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
 import superjson from 'superjson'
 
@@ -93,3 +110,19 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+// const isAuthed = t.middleware((opts) => {
+//   const { ctx } = opts;
+//   if (!ctx.user) {
+//     throw new TRPCError({ code: 'UNAUTHORIZED' });
+//   }
+//   return opts.next({
+//     ctx: {
+//       user: ctx.user,
+//       prisma
+//     },
+//   });
+// });
+
+// export const protectedProcedure = t.procedure.use(isAuthed);
+

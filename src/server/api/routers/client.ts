@@ -19,16 +19,5 @@ export const clientRouter = createTRPCRouter({
           password: password
         }
       })
-    }),
-  getAll: publicProcedure
-    .query(async ({ ctx }) => {
-      const caller = clientRouter.createCaller(ctx);
-      const message: string = await caller.test();
-      
-      return message;
-    }),
-  test: publicProcedure
-    .query(({ ctx }) => {
-      return "test"
-    }),
+    })
 });
