@@ -5,12 +5,18 @@ import PersonIcon from '@mui/icons-material/Person';
 import SearchBar from './SearchBar';
 import Link from 'next/link';
 import { Badge } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import LoginIcon from '@mui/icons-material/Login';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import UserContext from '~/Context/UserContext';
+import SignInModal from './modal/signInModal';
+import SignUpModal from './modal/signUpModal';
 
 export default function Navbar() {
     const contextController = useContext(UserContext);
-    // console.log("NavBar " + contextController.cartQuantity);
+    const [openSignInModal, setOpenSignInModal] = useState(false);
+    const [openSignUpModal, setOpenSignUpModal] = useState(false);
+
     return (
         <>
             <div className="h-18
@@ -21,7 +27,8 @@ export default function Navbar() {
                             grid-cols-12
                             divide-x-[1px]
                           divide-gray-300
-                          bg-white">
+                          bg-white
+                          sticky top-0 z-10">
                 <Link href="/" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                     <ChairIcon />
                     E-Shop
@@ -31,17 +38,31 @@ export default function Navbar() {
                     <CategoryIcon />
                     Категории
                 </Link>
-                <div className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
-                    <ShoppingCartIcon />
-                    <Badge badgeContent={0} color="primary">
-                        Корзина
-                    </Badge>
-                </div>
-                <div className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
-                    <PersonIcon />
-                    Личный кабинет
-                </div>
+                {contextController.client ?
+                    <Link href="/userCartAndOrders" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
+                        <ShoppingCartIcon />
+                        <Badge badgeContent={0} color="primary">
+                            Корзина
+                        </Badge>
+                    </Link> :
+                    <button onClick={() => setOpenSignInModal(true)} className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
+                        <LoginIcon />
+                        Войти
+                    </button>
+                }
+                {contextController.client ?
+                    <Link href="/userProfile" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
+                        <PersonIcon />
+                        Личный кабинет
+                    </Link> :
+                    <button onClick={() => setOpenSignUpModal(true)} className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
+                        <HowToRegIcon />
+                        Регистрация
+                    </button>
+                }
             </div >
+            <SignInModal state={openSignInModal} setOpen={setOpenSignInModal} />
+            <SignUpModal state={openSignUpModal} setOpen={setOpenSignUpModal} />
         </>
     )
 }

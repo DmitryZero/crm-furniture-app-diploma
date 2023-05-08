@@ -32,7 +32,7 @@ const ProductPage: NextPage = () => {
             <div className="grid grid-cols-2 row-span-2 px-24">
               <div className="flex justify-center">
                 <div className="relative w-4/5 aspect-square">
-                  <Image className="object-contain rounded-md border-2 border-solid border-gray-300" fill src={`data:image/jpeg;base64, ${product.data.productImg}`} alt="" />
+                  <Image className="object-contain" fill src={`data:image/jpeg;base64, ${product.data.productImg}`} alt="" />
                 </div>
               </div>
               <div className="bg-white rounded-md p-4">

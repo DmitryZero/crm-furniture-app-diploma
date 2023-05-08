@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { env } from "~/env.mjs";
 import { prisma } from '~/server/db';
-import bcrypt from 'bcrypt';
+import { HmacSHA256 } from 'crypto-js';
 
 interface IClientSignUp {
     email: string,
@@ -16,34 +16,61 @@ interface IClientSignIn {
 
 class UserController {
     static async signUp({ email, fullName, password }: IClientSignUp) {
-        try {
-            const client = await prisma.client.create({
-                data: {
-                    email: email,
-                    fullName: fullName,
-                    password: await bcrypt.hash(password, 3),
-                    refreshToken: "tokens.refreshToken"
+        const currentDate = new Date();
+
+        const session = await prisma.session.create({
+            data: {
+                expireDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay()),
+                client: {
+                    create: {
+                        email: email,
+                        fullName: fullName,
+                        password: HmacSHA256(password, env.HASH_KEY).toString()
+                    }
                 }
-            })
-
-            return {
-                client
+            },
+            include: {
+                client: true
             }
+        })
 
-        } catch (error) {
-            console.log(error)
-            throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: JSON.stringify(error) })
-        }
+        return session;
     }
 
     static async signIn({ email, password }: IClientSignIn) {
-        try {
-            
 
-        } catch (error) {
-            console.log(error)
-            throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: JSON.stringify(error) })
-        }
+        const hashedPassword = HmacSHA256(password, env.HASH_KEY).toString()
+
+        const client = await prisma.client.findFirst({
+            where: {
+                email: email,
+                password: hashedPassword
+            },
+        });
+
+        if (!client) throw new TRPCError({ code: 'NOT_FOUND', message: 'Email invalid' })
+
+        const currentDate = new Date();
+        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay());
+        const session = await prisma.session.upsert({
+            where: {
+                clientId: client.clientId
+            },
+            update: {},
+            create: {
+                client: {
+                    connect: {
+                        clientId: client.clientId
+                    }
+                },
+                expireDate: nextMonth,
+            },
+            include: {
+                client: true
+            }
+        })
+
+        return session;
     }
 }
 

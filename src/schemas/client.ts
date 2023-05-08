@@ -9,6 +9,6 @@ const clientSchema: toZod<Client> = z.object({
     password: z.string(),
     phone: z.string().nullable(),
     refreshToken: z.string().nullable()
-}) 
+})
 
-export {clientSchema};
+export { clientSchema };

@@ -15,18 +15,25 @@ type IProps = {
 
 export default function AddToCardButton({ productId, clickAddItem, clickRemoveItem: clickRemoveIem }: IProps) {
     const contextController = useContext(UserContext);
+    const [counter, setCounter] = useState(0);
 
-    const counterFromDb = api.productsInCart.getAmountOfProductsByClient.useQuery({
-        clientId: contextController.client?.clientId || "",
+    const amountApi = api.cart.getAmountOfProductsByClient.useQuery({
         productId: productId
-    }, { enabled: contextController.client != null });
+    }, {
+        enabled: false,
+    });
 
     useEffect(() => {
-        if (!counterFromDb.isLoading && counterFromDb && counterFromDb.data) setCounter(counterFromDb.data);
-    }, [counterFromDb.isLoading])
-    
-    const [counter, setCounter] = useState(counterFromDb.data || 0);
-    const updateCart = api.productsInCart.updateCart.useMutation();
+        const fetchData = async () => {
+            const { data } = await amountApi.refetch();
+            if (data) setCounter(data);
+        }
+
+        fetchData()
+            .catch(console.error);
+    }, [])
+
+    const updateCart = api.cart.updateCart.useMutation();
 
     const handleClickNewCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
@@ -35,7 +42,7 @@ export default function AddToCardButton({ productId, clickAddItem, clickRemoveIt
 
     const handleClickAddItem = debounce((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
-        
+
         setCountDbDebounced.current(counter + 1);
         setCounter(counter + 1);
         if (clickAddItem) clickAddItem(e);
@@ -51,9 +58,8 @@ export default function AddToCardButton({ productId, clickAddItem, clickRemoveIt
 
     const changeCounterInDb = (value: number) => {
         if (contextController.client?.clientId) {
-            updateCart.mutate({ clientId: contextController.client.clientId, productId: productId, amount: value });
-        }        
-        // if (contextController.cartQuantityUpdate) contextController.cartQuantityUpdate(); 
+            updateCart.mutate({ productId: productId, amount: value });
+        }
     }
 
     const setCountDbDebounced = useRef(debounce(changeCounterInDb, 1000));

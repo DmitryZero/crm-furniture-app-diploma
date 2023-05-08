@@ -1,8 +1,5 @@
 import { z } from "zod";
-import MD5 from "crypto-js/md5";
-
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { api } from "~/utils/api";
 import { TRPCClientError } from "@trpc/client";
 
 export const productsInCartRouter = createTRPCRouter({

@@ -15,10 +15,11 @@
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getCookie } from 'cookies-next';
 
 import { prisma } from "~/server/db";
 
-type CreateContextOptions = Record<string, never>;
+// type CreateContextOptions = Record<string, never>;
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -31,8 +32,8 @@ type CreateContextOptions = Record<string, never>;
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (_opts: CreateNextContextOptions) => {
-  const {req, res} = _opts;
-  
+  const { req, res } = _opts;
+
   return {
     req,
     res,
@@ -47,7 +48,7 @@ const createInnerTRPCContext = (_opts: CreateNextContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext(_opts);  
+  return createInnerTRPCContext(_opts);
 };
 
 /**
@@ -98,15 +99,27 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
-const isAuthed = t.middleware(async ({next, ctx}) => {  
-  const {req, res} = ctx;
-  
-  const accessToken = req.headers.authorization?.split(' ')[1];
-  if (!accessToken) throw new TRPCError({code: 'UNAUTHORIZED', message: "AccessToken не указан"});
+const isAuthed = t.middleware(async ({ next, ctx }) => {
+  const { req, res } = ctx;
+
+  const token = getCookie('token', { req, res})?.toString();
+  if (!token) throw new TRPCError({code: 'UNAUTHORIZED', message: "Cookie не указан"});
+
+  const client = await prisma.client.findFirst({
+    where: {
+      session: {
+        token: token
+      }
+    }
+  })
+  if (!client) throw new TRPCError({code: 'UNAUTHORIZED', message: "Cookie некорректный"});
 
   return next({
-    ctx: {      
-      prisma
+    ctx: {
+      req,
+      res,
+      prisma,
+      client
     },
   });
 });

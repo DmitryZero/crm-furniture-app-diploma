@@ -1,148 +1,83 @@
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import type { Product, ProductsInCart } from "@prisma/client";
 import { z } from "zod";
-import MD5 from "crypto-js/md5";
+import { env } from "~/env.mjs";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { api } from "~/utils/api";
-import { Client, Prisma, Product, ProductsInCart } from "@prisma/client";
-import { TRPCClientError, loggerLink } from "@trpc/client";
-import { log } from "console";
-
-type OrderData = {
-    productsInCart: ProductsInCart,
-    product: Product,
-}
-
-type ProductInfo = {
-    product: Product,
-    amount: number
-}
-
-type OrderInfo = {
-    products: ProductInfo[],
-    totalSum: number
+type ElmaOrder = {
+    __id: string,
+    client: [string],
+    order: {
+        rows: [
+            {
+                product: [string]
+                amount: number
+            }
+        ]
+    }
 }
 
 
 export const orderRouter = createTRPCRouter({
-    // createOrder: publicProcedure
-    //     .input(z.object({
-    //         clientId: z.string().uuid()
-    //     }))
-    //     .mutation(async ({ input, ctx }) => {
-    //         let orderData: OrderData[] = [];
+    createOrder: protectedProcedure
+        .input(z.object({
+            cartProducts: z.object({
+                productId: z.string().uuid(),
+                amount: z.number(),
+            }).array(),
+            summ: z.number()
+        }))
+        .mutation(async ({ input, ctx }) => {
+            const { prisma, client } = ctx;
 
-    //         const productsInCart = await ctx.prisma.productsInCart.findMany({
-    //             where: {
-    //                 clientId: input.clientId
-    //             }
-    //         })
-
-    //         if (!productsInCart) throw new TRPCClientError("productsInCart");
-
-    //         const findProducts = [];
-    //         for (let i = 0; i < productsInCart.length; i++) {
-    //             findProducts.push({
-    //                 productId: productsInCart[i]?.productId
-    //             })
-    //         }
-
-    //         const products = await ctx.prisma.product.findMany({
-    //             where: {
-    //                 OR: findProducts
-    //             }
-    //         })
-
-    //         if (products.length != productsInCart.length) throw new TRPCClientError("productsInCart");
-
-    //         let summ = 0;
-    //         products.every((product, index) => summ += product.price * (productsInCart[index]?.amount || 0));
-
-    //         let orderedProducts: { amount: number, productId: string }[] = [];
-    //         products.forEach((product, index) => {
-    //             orderedProducts.push({
-    //                 amount: productsInCart[index]?.amount || 0,
-    //                 productId: product.productId
-    //             })
-    //         });
-
-    //         const order = await ctx.prisma.order.create({
-    //             data: {
-    //                 summ: summ,
-    //                 client: {
-    //                     connect: { clientId: input.clientId }
-    //                 },
-    //                 productsOfOrder: {
-    //                     createMany: {
-    //                         data: orderedProducts
-    //                     }
-    //                 }
-    //             }
-    //         })
-
-    //         await ctx.prisma.productsInCart.deleteMany({
-    //             where: {
-    //                 clientId: input.clientId
-    //             }
-    //         });
-
-    //         return order;
-    //     }),
-    // getAll: publicProcedure
-    //     .input(z.object({
-    //         clientId: z.string().uuid()
-    //     }))
-    //     .query(async ({ input, ctx }) => {
-    //         return await ctx.prisma.order.findMany({
-    //             where: {
-    //                 clientId: input.clientId
-    //             }
-    //         })
-    //     }),
-
-    // getOrderInfo: publicProcedure
-    //     .input(z.object({
-    //         orderId: z.string().uuid()
-    //     }))
-    //     .query(async ({ input, ctx }): Promise<OrderInfo> => {
-    //         const productsOfOrder = await ctx.prisma.productsOfOrder.findMany({
-    //             where: {
-    //                 orderId: input.orderId
-    //             }
-    //         })
-
-    //         if (!productsOfOrder) throw new TRPCClientError("getOrderInfo - order is not found");
-
-    //         const findProducts = [];
-    //         for (let i = 0; i < productsOfOrder.length; i++) {
-    //             findProducts.push({
-    //                 productId: productsOfOrder[i]?.productId
-    //             })
-    //         }
-
-    //         const products = await ctx.prisma.product.findMany({
-    //             where: {
-    //                 OR: findProducts
-    //             }
-    //         })
-
-    //         if (products.length != productsOfOrder.length) throw new TRPCClientError("productsInCart");
-
-
-    //         const result: ProductInfo[] = [];
-    //         let totalSum = 0;
+            return await prisma.order.create({
+                data: {
+                    summ: input.summ,
+                    client: {
+                        connect: {
+                            clientId: client.clientId,
+                        }
+                    },
+                    productsOfOrder: {
+                        createMany: {
+                            data: input.cartProducts
+                        }
+                    }
+                }
+            })
+        }),
+    createOrderInElma: protectedProcedure
+        .input(z.object({
+            context: z.object({
+                __id: z.string().uuid(),
+                client: z.string().uuid().array(),
+                order: z.object({
+                    rows: z.object({
+                        product: z.string().uuid().array(),
+                        amount: z.number()
+                    }).array()
+                })
+            })
+        }))
+        .mutation(async ({ input }) => {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", `Bearer ${env.ELMA_TOKEN}`);
             
-    //         for (let i = 0; i < products.length; i++) {
-    //             result.push({
-    //                 product: products[i]!,
-    //                 amount: productsOfOrder[i]?.amount!
-    //             })
+            const raw = JSON.stringify(input);
 
-    //             totalSum += productsOfOrder[i]?.amount! * products[i]?.price!
-    //         }
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw
+            };
 
-    //         return {
-    //             products: result,
-    //             totalSum: totalSum
-    //         }
-    //     })
+            const response = await fetch("https://5b4p6ukak4ube.elma365.ru/pub/v1/app/_clients/_leads/create", requestOptions);
+            if (response.ok) {
+                const json = await response.json();
+                return json;
+            }
+            const text = await response.text();
+            return text;
+        }),
 });
+

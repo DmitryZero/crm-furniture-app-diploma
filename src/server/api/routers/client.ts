@@ -1,20 +1,24 @@
 import { z } from "zod";
-import MD5 from "crypto-js/md5";
+import { setCookie, deleteCookie, getCookie } from 'cookies-next';
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
-import { api } from "~/utils/api";
 import UserController from "~/auth/UserController";
 
 export const clientRouter = createTRPCRouter({
   signIn: publicProcedure
     .input(z.object({
-      login: z.string(),
+      email: z.string(),
       password: z.string()
     }))
-    .query(({ input, ctx }) => {
-      const password = MD5(input.password).toString();
+    .mutation(async ({ input, ctx }) => {
+      const { req, res } = ctx;
+      const session = await UserController.signIn({ email: input.email, password: input.password });
 
-      
+      const currentDate = new Date();
+      const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay());
+      setCookie('token', session.token, { req, res, expires: nextMonth, httpOnly: true });
+
+      return session.client;
     }),
   signUp: publicProcedure
     .input(z.object({
@@ -22,16 +26,49 @@ export const clientRouter = createTRPCRouter({
       fullName: z.string(),
       password: z.string()
     }))
-    .query(async ({ input, ctx }) => {
-      return await UserController.signUp({email: input.email, fullName: input.fullName, password: input.password});
+    .mutation(async ({ input, ctx }) => {
+      const { req, res } = ctx;
+      const session = await UserController.signUp({ email: input.email, fullName: input.fullName, password: input.password });
+
+      const currentDate = new Date();
+      const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay());
+      setCookie('token', session.token, { req, res, expires: nextMonth, httpOnly: true });
+
+      return session.client;
     }),
-  login: protectedProcedure
-    .input(z.object({
-      login: z.string(),
-      password: z.string()
-    }))
-    .query(({ input, ctx }) => {
+  clearTokenCookie: protectedProcedure
+    .mutation(({ ctx }) => {
+      const { req, res } = ctx;
+      deleteCookie('token', { req, res })
 
       return true;
-    })
+    }),
+  getClientByCookie: protectedProcedure
+    .query(({ ctx }) => {
+      const { client } = ctx;
+
+      return client;
+    }),
+  updateUserInfo: protectedProcedure
+    .input(z.object({
+      fullName: z.string(),
+      email: z.string().email(),
+      phone: z.string()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { prisma, client } = ctx;
+
+      const user = await prisma.client.update({
+        where: {
+          clientId: client.clientId
+        },
+        data: {
+          fullName: input.fullName,
+          email: input.email,
+          phone: input.phone,
+        }
+      })
+
+      return user;
+    }),
 });

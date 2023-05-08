@@ -7,8 +7,9 @@ import { z } from "zod";
 const server = z.object({
   DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
-  ACCESS_KEY: z.string(),
-  REFRESH_KEY: z.string()
+  HASH_KEY: z.string(),  
+  DADATA_API_KEY: z.string(),
+  ELMA_TOKEN: z.string()
 });
 
 /**
@@ -16,7 +17,7 @@ const server = z.object({
  * built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 const client = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),  
 });
 
 /**
@@ -26,10 +27,12 @@ const client = z.object({
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
 const processEnv = {
+  DADATA_API_KEY: process.env.DADATA_API_KEY,
   DATABASE_URL: process.env.DATABASE_URL,
-  NODE_ENV: process.env.NODE_ENV,  
-  ACCESS_KEY: process.env.ACCESS_KEY,
-  REFRESH_KEY: process.env.REFRESH_KEY
+  NODE_ENV: process.env.NODE_ENV,
+  HASH_KEY: process.env.HASH_KEY,
+  ELMA_TOKEN: process.env.ELMA_TOKEN
+  // DADATA_API_KEY: process.env.DADATA_API_KEY
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
