@@ -48,7 +48,7 @@ export const orderRouter = createTRPCRouter({
             })
 
             const companyId = input.companyId;
-            let companyTemplate = {
+            const companyTemplate = {
                 companyId: "",
                 inn: "",
                 address: "",

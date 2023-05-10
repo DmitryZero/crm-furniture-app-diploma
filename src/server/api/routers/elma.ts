@@ -77,13 +77,13 @@ export const elmaRouter = createTRPCRouter({
                 body: raw
             };
 
-            const response = await fetch("https://5b4p6ukak4ube.elma365.ru/api/extensions/24ea2b1c-9a27-4dc8-bbca-e6410ee79891/script/CreateOrder", requestOptions);
-            if (response.ok) {
-                const json = await response.json();
-                return json;
-            }
-            const text = await response.text();
-            return text;
+            return await fetch("https://5b4p6ukak4ube.elma365.ru/api/extensions/24ea2b1c-9a27-4dc8-bbca-e6410ee79891/script/CreateOrder", requestOptions);
+            // if (response.ok) {
+            //     const json = await response.json();
+            //     return json;
+            // }
+            // const text = await response.text();
+            // return text;
         }),
 });
 

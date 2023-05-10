@@ -108,7 +108,7 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
   const client = await prisma.client.findFirst({
     where: {
       session: {
-        token: token
+        token: token.toString()
       }
     }
   })

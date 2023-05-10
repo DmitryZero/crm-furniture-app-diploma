@@ -1,30 +1,27 @@
 import { api } from "~/utils/api"
 import CategoryTree from "../categoryTree/CategoryTree";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Category } from "@prisma/client";
+import { TextField } from "@mui/material";
 
-export default function ProductsFilterCard() {
-    const [categories, setCategories] = useState<Category[] | undefined>(undefined);
-    const parentCategories = api.category.getAll.useQuery(undefined, {
-        enabled: false
-    });
+interface IProps {
+    categoryId: string,
+    setCategoryId: Dispatch<SetStateAction<string>>,
+    setMinPrice: Dispatch<SetStateAction<number | undefined>>,
+    setMaxPrice: Dispatch<SetStateAction<number | undefined>>,
+    setQuery: Dispatch<SetStateAction<string>>
+}
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const dataApi = await parentCategories.refetch();
-            if (dataApi.data) setCategories(dataApi.data?.filter(category => category.parentCategoryId === null));
-        }
-
-        fetchData()
-            .catch(console.error);
-    }, [])
-
+export default function ProductsFilterCard({categoryId, setCategoryId, setMinPrice, setMaxPrice, setQuery}: IProps) {
     return (
         <>
             <div className="bg-white p-3 rounded-md">
                 <div>Категории</div>
-                <div className="pl-2">
-                    {categories && <CategoryTree parentCategories={categories} />}
+                <div className="flex flex-col gap-3">
+                    <CategoryTree categoryId={categoryId} setCategoryId={setCategoryId} />
+                    <TextField onChange={(e) => setMinPrice(Number(e.target.value))} type="number" id="minPrice" label="Минимальная сумма" variant="standard" />
+                    <TextField onChange={(e) => setMaxPrice(Number(e.target.value))} type="number" id="maxPrice" label="Максимальная сумма" variant="standard" />
+                    <TextField onChange={(e) => setQuery(e.target.value)} type="text" id="query" label="Название" variant="standard" />
                 </div>
             </div>
         </>

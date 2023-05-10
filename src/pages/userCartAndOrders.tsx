@@ -86,7 +86,7 @@ const UserCartAndOrdersPage: NextPage = () => {
                                     {
                                         isEntity &&
                                         <FormControl fullWidth className="mb-3">
-                                            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                                            <InputLabel id="demo-simple-select-label">Юридическое лицо</InputLabel>
                                             <Select
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"

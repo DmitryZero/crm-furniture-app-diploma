@@ -19,7 +19,7 @@ export default function Navbar() {
 
     return (
         <>
-            <div className="h-18
+            <div className="h-14
                           border-b-gray-300 
                             border-solid 
                             border-2
@@ -33,7 +33,7 @@ export default function Navbar() {
                     <ChairIcon />
                     E-Shop
                 </Link>
-                <div className="col-span-4 text-center"><SearchBar /></div>
+                <div className="col-span-4 text-center"></div>
                 <Link href="/productSearch" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                     <CategoryIcon />
                     Категории
