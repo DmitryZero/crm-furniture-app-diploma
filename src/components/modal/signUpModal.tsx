@@ -31,14 +31,15 @@ export default function SignUpModal({ state, setOpen }: IProps) {
     const [fullName, setFullName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [errorVisible, setIsErrorVisible] = React.useState(false);
     const contextController = React.useContext(UserContext);
 
     const signUpRequest = api.client.signUp.useMutation()
 
     api.client.getClientByCookie.useQuery(undefined, {
-        enabled: false,        
+        enabled: false,
     });
-    
+
     const handleClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation()
         setOpen(false);
@@ -46,8 +47,13 @@ export default function SignUpModal({ state, setOpen }: IProps) {
 
     const handleClick = handleErrors(async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation();
-        const result = await signUpRequest.mutateAsync({ email: email, password: password, fullName: fullName });
-        if (contextController.clientSetter && result) contextController.clientSetter(result);        
+        const result = await signUpRequest.mutateAsync({ email: email, password: password, fullName: fullName },
+            {
+                onError: () => {
+                    setIsErrorVisible(true);
+                }
+            });
+        if (contextController.clientSetter && result) contextController.clientSetter(result);
         if (result) setOpen(false);
     });
 
@@ -70,12 +76,15 @@ export default function SignUpModal({ state, setOpen }: IProps) {
                     <Box sx={style}>
                         <div className='text-2xl font-roboto mb-3'>Авторизация</div>
                         <div className="flex flex-col gap-3">
-                            <TextField onChange={(e) => { setFullName(e.target.value) }} id="fullName" label="ФИО" variant="outlined" />
-                            <TextField onChange={(e) => { setEmail(e.target.value) }} id="email" label="Email" variant="outlined" />
-                            <TextField onChange={(e) => { setPassword(e.target.value) }} id="password" type="password" label="Пароль" variant="outlined" />
+                            <TextField onChange={(e) => { setFullName(e.target.value); setIsErrorVisible(false) }} id="fullName" label="ФИО" variant="outlined" />
+                            <TextField onChange={(e) => { setEmail(e.target.value); setIsErrorVisible(false) }} id="email" label="Email" variant="outlined" />
+                            <TextField onChange={(e) => { setPassword(e.target.value); setIsErrorVisible(false) }} id="password" type="password" label="Пароль" variant="outlined" />
+                            {errorVisible &&
+                                <div className="text-red-600 text-xl font-roboto ">Были указаны некорректные данные при регистрации</div> 
+                            }
                             <button onClick={handleClick} className='bg-blue-500 text-white self-end
                                  px-4 py-2 rounded-xl hover:bg-blue-100
-                                hover:text-black transition-all'>Войти</button>
+                                hover:text-black transition-all'>Зарегестрироваться</button>
                         </div>
                     </Box>
                 </Fade>

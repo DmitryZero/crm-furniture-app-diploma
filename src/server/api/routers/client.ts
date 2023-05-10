@@ -22,9 +22,9 @@ export const clientRouter = createTRPCRouter({
     }),
   signUp: publicProcedure
     .input(z.object({
-      email: z.string(),
-      fullName: z.string(),
-      password: z.string()
+      email: z.string().email(),
+      fullName: z.string().min(1),
+      password: z.string().min(1)
     }))
     .mutation(async ({ input, ctx }) => {
       const { req, res } = ctx;

@@ -1,4 +1,5 @@
-import { Product, ProductsInCart } from "@prisma/client";
+import { FormControl, FormControlLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Switch } from "@mui/material";
+import { Company, Product, ProductsInCart } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -7,17 +8,24 @@ import CartItem from "~/components/cart/CartItem";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
 
-const userCartAndOrdersPage: NextPage = () => {
+const UserCartAndOrdersPage: NextPage = () => {
     const [cartProducts, setCartProducts] = useState<(ProductsInCart & { product: Product })[] | undefined>(undefined);
+    const [isEntity, setIsEntity] = useState(false);
+    const [currentEntityId, setCurrentEntity] = useState<string>('');
+
     const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, { enabled: false });
 
-    const createOrderApi = api.order.createOrder.useMutation();
-    const createOrderInElmaApi = api.order.createOrderInElma.useMutation();
+    const createOrderApi = api.order.createOrder.useMutation();    
+
+    const companies = api.company.getAllByClient.useQuery(undefined, { enabled: false });
 
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await cartProductsApi.refetch();
             if (data) setCartProducts(data);
+            
+            const {data: companiesData} = await companies.refetch();
+            if (companiesData && companiesData.length > 0) setCurrentEntity(companiesData[0]?.companyId || "");
         }
 
         fetchData()
@@ -29,27 +37,20 @@ const userCartAndOrdersPage: NextPage = () => {
         const cartProductsData: { productId: string; amount: number }[] = [];
         cartProducts?.forEach(item => cartProductsData.push({ productId: item.productId, amount: item.amount }));
 
-        const order = await createOrderApi.mutateAsync({
+        await createOrderApi.mutateAsync({
             summ: summ,
-            cartProducts: cartProductsData
-        })
-
-        const elmaData: { product: string[], amount: number }[] = [];
-        cartProductsData.forEach(item => elmaData.push({
-            product: [item.productId],
-            amount: item.amount
-        }))
-
-        await createOrderInElmaApi.mutateAsync({
-            context: {
-                __id: order.orderId,
-                client: [order.clientId],
-                order: {
-                    rows: elmaData
-                }
-            }
-        });
+            cartProducts: cartProductsData,
+            companyId: currentEntityId
+        })        
     });
+
+    const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsEntity(e.target.checked);
+    }
+
+    const handleSelectChange = (e: SelectChangeEvent<string>) => {
+        setCurrentEntity(e.target.value);
+    }
 
     return (
         <>
@@ -77,7 +78,38 @@ const userCartAndOrdersPage: NextPage = () => {
                                 </div>
                             }
                         </div>
-                        <button onClick={handleClick} className="">Create Order</button>
+                        <div className="flex flex-col gap-2">
+                            {
+                                companies.data && companies.data.length > 0 &&
+                                <>
+                                    <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label="Совершить покупку от имении юр. лица" />
+                                    {
+                                        isEntity &&
+                                        <FormControl fullWidth className="mb-3">
+                                            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                label="Юридичесое лицо"
+                                                value={currentEntityId}
+                                                onChange={handleSelectChange}
+                                            >
+                                                {
+                                                    companies.data && companies.data?.length > 0 &&
+                                                    companies.data?.map(company => {
+                                                        return (
+                                                            <MenuItem key={company.companyId} value={company.companyId}>{company.companyName}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    }
+                                </>
+                            }
+                            <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
+                                   hover:text-black transition duration-300 ease-in-out">Create Order</button>
+                        </div>
                     </div>
                 </main>
             </CartContext.Provider>
@@ -85,4 +117,4 @@ const userCartAndOrdersPage: NextPage = () => {
     );
 };
 
-export default userCartAndOrdersPage;
+export default UserCartAndOrdersPage;

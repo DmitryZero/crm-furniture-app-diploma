@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import type { Product, ProductsInCart } from "@prisma/client";
 import { z } from "zod";
 import { env } from "~/env.mjs";
+import { elmaRouter } from "./elma";
 
 type ElmaOrder = {
     __id: string,
@@ -24,12 +25,13 @@ export const orderRouter = createTRPCRouter({
                 productId: z.string().uuid(),
                 amount: z.number(),
             }).array(),
-            summ: z.number()
+            summ: z.number(),
+            companyId: z.string().nullish(),
         }))
         .mutation(async ({ input, ctx }) => {
             const { prisma, client } = ctx;
 
-            return await prisma.order.create({
+            const order = await prisma.order.create({
                 data: {
                     summ: input.summ,
                     client: {
@@ -41,43 +43,46 @@ export const orderRouter = createTRPCRouter({
                         createMany: {
                             data: input.cartProducts
                         }
-                    }
+                    },                    
                 }
             })
-        }),
-    createOrderInElma: protectedProcedure
-        .input(z.object({
-            context: z.object({
-                __id: z.string().uuid(),
-                client: z.string().uuid().array(),
-                order: z.object({
-                    rows: z.object({
-                        product: z.string().uuid().array(),
-                        amount: z.number()
-                    }).array()
-                })
-            })
-        }))
-        .mutation(async ({ input }) => {
-            const myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Authorization", `Bearer ${env.ELMA_TOKEN}`);
-            
-            const raw = JSON.stringify(input);
 
-            const requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: raw
-            };
-
-            const response = await fetch("https://5b4p6ukak4ube.elma365.ru/pub/v1/app/_clients/_leads/create", requestOptions);
-            if (response.ok) {
-                const json = await response.json();
-                return json;
+            const companyId = input.companyId;
+            let companyTemplate = {
+                companyId: "",
+                inn: "",
+                address: "",
+                companyName: ""
             }
-            const text = await response.text();
-            return text;
+            if (companyId && companyId !== "") {
+                const company = await prisma.company.findFirst({
+                    where: {
+                        companyId: companyId
+                    }
+                })
+
+                if (company) {
+                    companyTemplate.companyId = companyId;
+                    companyTemplate.address = company.address;
+                    companyTemplate.companyName = company.companyName;
+                    companyTemplate.inn = company.inn;
+                }                
+            } 
+            
+            const caller = elmaRouter.createCaller(ctx);
+            await caller.createOrderInElma({
+                orderId: order.orderId,
+                company: (companyId && companyId !== "" && companyTemplate.inn !== "") ? companyTemplate : null,
+                client: {
+                    clientId: client.clientId,
+                    email: client.email,
+                    fullName: client.fullName,
+                    phone: client.phone || ""
+                },
+                orderTable: {
+                    rows: input.cartProducts
+                }
+            })
         }),
 });
 

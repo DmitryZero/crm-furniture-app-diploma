@@ -7,6 +7,7 @@ import { createTRPCRouter } from "./trpc";
 import { dadataRouter } from "./routers/dadata";
 import { companyRouter } from "./routers/company";
 import { cartRouter } from "./routers/cart";
+import { elmaRouter } from "./routers/elma";
 
 /**
  * This is the primary router for your server.
@@ -17,11 +18,11 @@ export const appRouter = createTRPCRouter({
   product: productRouter,
   category: categoryRouter,
   client: clientRouter,
-  // productsInCart: productsInCartRouter,
   order: orderRouter,
   dadata: dadataRouter,
   company: companyRouter,
-  cart: cartRouter
+  cart: cartRouter,
+  elma: elmaRouter
 });
 
 // export type definition of API
