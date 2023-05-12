@@ -1,5 +1,5 @@
-import { FormControl, FormControlLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Switch } from "@mui/material";
-import { Company, Product, ProductsInCart } from "@prisma/client";
+import { Accordion, AccordionDetails, AccordionSummary, FormControl, FormControlLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, Typography } from "@mui/material";
+import { Product, ProductsInCart } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -7,6 +7,8 @@ import CartContext from "~/Context/CartContext";
 import CartItem from "~/components/cart/CartItem";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import OrderItem from "~/components/cart/OrderItem";
 
 const UserCartAndOrdersPage: NextPage = () => {
     const [cartProducts, setCartProducts] = useState<(ProductsInCart & { product: Product })[] | undefined>(undefined);
@@ -14,8 +16,9 @@ const UserCartAndOrdersPage: NextPage = () => {
     const [currentEntityId, setCurrentEntity] = useState<string>('');
 
     const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, { enabled: false });
+    const ordersApi = api.order.getAllOdersByClient.useQuery(undefined, { enabled: false });
 
-    const createOrderApi = api.order.createOrder.useMutation();    
+    const createOrderApi = api.order.createOrder.useMutation();
 
     const companies = api.company.getAllByClient.useQuery(undefined, { enabled: false });
 
@@ -23,9 +26,11 @@ const UserCartAndOrdersPage: NextPage = () => {
         const fetchData = async () => {
             const { data } = await cartProductsApi.refetch();
             if (data) setCartProducts(data);
-            
-            const {data: companiesData} = await companies.refetch();
+
+            const { data: companiesData } = await companies.refetch();
             if (companiesData && companiesData.length > 0) setCurrentEntity(companiesData[0]?.companyId || "");
+
+            await ordersApi.refetch();
         }
 
         fetchData()
@@ -41,7 +46,10 @@ const UserCartAndOrdersPage: NextPage = () => {
             summ: summ,
             cartProducts: cartProductsData,
             companyId: currentEntityId
-        })        
+        })
+
+        setCartProducts(undefined);
+        await ordersApi.refetch();
     });
 
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,9 +115,41 @@ const UserCartAndOrdersPage: NextPage = () => {
                                     }
                                 </>
                             }
-                            <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
-                                   hover:text-black transition duration-300 ease-in-out">Create Order</button>
+                            {
+                                cartProducts && cartProducts.length > 0 &&
+                                <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
+                                   hover:text-black transition duration-300 ease-in-out">Заказать</button>
+                            }
+
                         </div>
+                    </div>
+                    <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                        {
+                            ordersApi.data && ordersApi.data.length > 0 &&
+                            ordersApi.data.map(item => {
+                                return (
+                                    <Accordion key={item.orderId}>
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1a-content"
+                                            id="panel1a-header"
+                                        >
+                                            <Typography>Заказ на {item.summ} РУБ.</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {
+                                                item.productsOfOrder &&
+                                                item.productsOfOrder.map(product => {
+                                                    return (
+                                                        <OrderItem key={product.productId} orderProduct={product} />
+                                                    );
+                                                })
+                                            }
+                                        </AccordionDetails>
+                                    </Accordion>
+                                );
+                            })
+                        }
                     </div>
                 </main>
             </CartContext.Provider>

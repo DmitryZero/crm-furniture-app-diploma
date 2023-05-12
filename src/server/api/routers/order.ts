@@ -4,20 +4,6 @@ import { z } from "zod";
 import { env } from "~/env.mjs";
 import { elmaRouter } from "./elma";
 
-type ElmaOrder = {
-    __id: string,
-    client: [string],
-    order: {
-        rows: [
-            {
-                product: [string]
-                amount: number
-            }
-        ]
-    }
-}
-
-
 export const orderRouter = createTRPCRouter({
     createOrder: protectedProcedure
         .input(z.object({
@@ -84,5 +70,22 @@ export const orderRouter = createTRPCRouter({
                 }
             })
         }),
+    getAllOdersByClient: protectedProcedure
+    .query(async ({ctx}) => {
+        const {prisma, client} = ctx;
+
+        return await prisma.order.findMany({
+            where: {
+                clientId: client.clientId
+            },
+            include: {
+                productsOfOrder: {
+                    include: {
+                        product: true
+                    }
+                }
+            }
+        })        
+    })
 });
 

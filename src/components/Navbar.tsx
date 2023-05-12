@@ -39,7 +39,7 @@ export default function Navbar() {
                     Категории
                 </Link>
                 {contextController.client ?
-                    <Link href="/UserCartAndOrders" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
+                    <Link href="/userCartAndOrders" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                         <ShoppingCartIcon />
                         <Badge badgeContent={0} color="primary">
                             Корзина
