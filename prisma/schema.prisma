@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -34,10 +34,10 @@ model Product {
 
 model Order {
   orderId         String            @id @default(uuid()) @db.Uuid
-  deliveryDate    DateTime?         @db.Date
   summ            Int
   clientId        String            @db.Uuid
   managerId       String?           @db.Uuid
+  orderStatus     OrderStatus
   client          Client            @relation(fields: [clientId], references: [clientId])
   manager         Manager?          @relation(fields: [managerId], references: [managerId])
   productsOfOrder productsOfOrder[]
@@ -64,38 +64,31 @@ model productsOfOrder {
 }
 
 model Client {
-  clientId        String            @id @default(uuid()) @db.Uuid
-  fullName        String            @db.VarChar(120)
-  phone           String?           @db.VarChar(25)
-  email           String            @unique @db.VarChar(100)
-  password        String
-  clientInCompany ClientInCompany[]
-  orders          Order[]
-  productsInCart  ProductsInCart[]
-  session         Session?
+  clientId       String           @id @default(uuid()) @db.Uuid
+  fullName       String           @db.VarChar(120)
+  phone          String?          @db.VarChar(25)
+  email          String           @unique @db.VarChar(100)
+  password       String
+  companyId      String?          @db.Uuid
+  company        Company?         @relation(fields: [companyId], references: [companyId])
+  orders         Order[]
+  productsInCart ProductsInCart[]
+  session        Session?
 }
 
 model Session {
   token      String   @id @default(uuid()) @db.Uuid
-  expireDate DateTime @db.Timestamptz()
+  expireDate DateTime @db.Timestamptz(3)
   clientId   String   @unique @db.Uuid
   client     Client   @relation(fields: [clientId], references: [clientId])
 }
 
 model Company {
-  companyId       String            @id @default(uuid()) @db.Uuid
-  inn             String            @unique
-  companyName     String
-  address         String
-  clientInCompany ClientInCompany[]
-}
-
-model ClientInCompany {
-  clientInCompanyId String  @id @default(uuid()) @db.Uuid
-  clientId          String  @db.Uuid
-  companyId         String  @db.Uuid
-  client            Client  @relation(fields: [clientId], references: [clientId])
-  company           Company @relation(fields: [companyId], references: [companyId])
+  companyId   String   @id @default(uuid()) @db.Uuid
+  inn         String   @unique
+  companyName String
+  address     String
+  clients     Client[]
 }
 
 model Manager {
@@ -104,4 +97,13 @@ model Manager {
   phone     String  @db.VarChar(25)
   email     String  @db.VarChar(100)
   orders    Order[]
+}
+
+enum OrderStatus {
+  distribution 
+  processing
+  manufacturing
+  delivery
+  close
+  canceled
 }

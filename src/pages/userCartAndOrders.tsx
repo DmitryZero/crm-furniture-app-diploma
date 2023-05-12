@@ -10,6 +10,15 @@ import handleErrors from "~/utils/handleErrors";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OrderItem from "~/components/cart/OrderItem";
 
+const orderStatusDict = {
+    distribution: "На распределении",
+    processing: "В обработке",
+    manufacturing: "На производстве",
+    delivery: "В доставке",
+    close: "Успешно закрыто",
+    canceled: "Отменена"
+}
+
 const UserCartAndOrdersPage: NextPage = () => {
     const [cartProducts, setCartProducts] = useState<(ProductsInCart & { product: Product })[] | undefined>(undefined);
     const [isEntity, setIsEntity] = useState(false);
@@ -134,7 +143,7 @@ const UserCartAndOrdersPage: NextPage = () => {
                                             aria-controls="panel1a-content"
                                             id="panel1a-header"
                                         >
-                                            <Typography>Заказ на {item.summ} РУБ.</Typography>
+                                            <Typography>Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             {

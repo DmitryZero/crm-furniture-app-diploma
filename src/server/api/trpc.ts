@@ -61,6 +61,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
 import { TRPCError, initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
 import superjson from 'superjson'
+import { env } from "~/env.mjs";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -125,4 +126,21 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
 });
 
 export const protectedProcedure = t.procedure.use(isAuthed);
+
+const isElmaTokenValid = t.middleware(async ({ next, ctx }) => {
+  const { req, res } = ctx;
+
+  const authToken = req.headers.authorization?.split(' ')[1];
+  if (!authToken || authToken !== env.SHOP_TOKEN) throw new TRPCError({code: 'UNAUTHORIZED', message: "Incorrect token"});
+
+  return next({
+    ctx: {
+      req,
+      res,
+      prisma
+    },
+  });
+});
+
+export const elmaProcedure = t.procedure.use(isElmaTokenValid);
 

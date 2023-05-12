@@ -9,7 +9,8 @@ const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   HASH_KEY: z.string(),  
   DADATA_API_KEY: z.string(),
-  ELMA_TOKEN: z.string()
+  ELMA_TOKEN: z.string(),
+  SHOP_TOKEN: z.string()
 });
 
 /**
@@ -31,7 +32,8 @@ const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
   HASH_KEY: process.env.HASH_KEY,
-  ELMA_TOKEN: process.env.ELMA_TOKEN
+  ELMA_TOKEN: process.env.ELMA_TOKEN,
+  SHOP_TOKEN: process.env.SHOP_TOKEN
   // DADATA_API_KEY: process.env.DADATA_API_KEY
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };

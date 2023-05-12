@@ -11,7 +11,7 @@ export const companyRouter = createTRPCRouter({
 
             return await prisma.company.findMany({
                 where: {
-                    clientInCompany: {
+                    clients: {
                         some: {
                             clientId: client.clientId
                         }
@@ -29,26 +29,27 @@ export const companyRouter = createTRPCRouter({
             const { prisma, client } = ctx;
 
             if (client.clientId) {
-                await prisma.clientInCompany.create({
-                    data: {
-                        client: {
+                await prisma.company.upsert({
+                    where: {
+                        inn: input.inn
+                    },
+                    update: {
+                        clients: {
                             connect: {
-                                clientId: client.clientId,
+                                clientId: client.clientId
                             }
-                        },
-                        company: {
-                            connectOrCreate: {
-                                where: {
-                                    inn: input.inn
-                                },
-                                create: {
-                                    address: input.address,
-                                    companyName: input.companyName,
-                                    inn: input.inn,
-                                }
+                        }
+                    },
+                    create: {
+                        address: input.address,
+                        companyName: input.companyName,
+                        inn: input.inn,
+                        clients: {
+                            connect: {
+                                clientId: client.clientId
                             }
-                        },
-                    }
+                        }
+                    }                    
                 })
             }
         }),
@@ -57,11 +58,15 @@ export const companyRouter = createTRPCRouter({
         .mutation(async ({ input, ctx }) => {
             const { prisma, client } = ctx;
 
-            await prisma.clientInCompany.deleteMany({
+            await prisma.company.update({
                 where: {
-                    clientId: client.clientId,
-                    company: {
-                        inn: input.inn
+                    inn: input.inn
+                },
+                data: {
+                    clients: {
+                        disconnect: {
+                            clientId: client.clientId
+                        }
                     }
                 }
             })

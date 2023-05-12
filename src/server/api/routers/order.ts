@@ -1,8 +1,9 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import type { Product, ProductsInCart } from "@prisma/client";
+import { createTRPCRouter, elmaProcedure, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { OrderStatus, Product, ProductsInCart } from "@prisma/client";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 import { elmaRouter } from "./elma";
+import { cartRouter } from "./cart";
 
 export const orderRouter = createTRPCRouter({
     createOrder: protectedProcedure
@@ -29,7 +30,8 @@ export const orderRouter = createTRPCRouter({
                         createMany: {
                             data: input.cartProducts
                         }
-                    },                    
+                    },
+                    orderStatus: OrderStatus.distribution
                 }
             })
 
@@ -52,9 +54,9 @@ export const orderRouter = createTRPCRouter({
                     companyTemplate.address = company.address;
                     companyTemplate.companyName = company.companyName;
                     companyTemplate.inn = company.inn;
-                }                
-            } 
-            
+                }
+            }
+
             const caller = elmaRouter.createCaller(ctx);
             await caller.createOrderInElma({
                 orderId: order.orderId,
@@ -69,23 +71,43 @@ export const orderRouter = createTRPCRouter({
                     rows: input.cartProducts
                 }
             })
+
+            const cartCaller = cartRouter.createCaller(ctx);
+            await cartCaller.clearCart(undefined);
         }),
     getAllOdersByClient: protectedProcedure
-    .query(async ({ctx}) => {
-        const {prisma, client} = ctx;
+        .query(async ({ ctx }) => {
+            const { prisma, client } = ctx;
 
-        return await prisma.order.findMany({
-            where: {
-                clientId: client.clientId
-            },
-            include: {
-                productsOfOrder: {
-                    include: {
-                        product: true
+            return await prisma.order.findMany({
+                where: {
+                    clientId: client.clientId
+                },
+                include: {
+                    productsOfOrder: {
+                        include: {
+                            product: true
+                        }
                     }
                 }
-            }
-        })        
-    })
+            })
+        }),
+    updateOrderStatus: elmaProcedure
+        .input(z.object({
+            id: z.string().uuid(),
+            newStatus: z.nativeEnum(OrderStatus)
+        }))
+        .mutation(async ({ input, ctx }) => {
+            const { prisma } = ctx;
+
+            return await prisma.order.update({
+                where: {
+                    orderId: input.id
+                },
+                data: {
+                    orderStatus: input.newStatus
+                }
+            })
+        })
 });
 

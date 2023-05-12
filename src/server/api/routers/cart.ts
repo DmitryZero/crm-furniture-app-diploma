@@ -41,7 +41,7 @@ export const cartRouter = createTRPCRouter({
             amount: z.number().nonnegative()
         }))
         .mutation(async ({ input, ctx }) => {
-            const {prisma, client} = ctx;
+            const { prisma, client } = ctx;
 
             if (input.amount > 0) {
                 return await ctx.prisma.productsInCart.upsert({
@@ -74,5 +74,15 @@ export const cartRouter = createTRPCRouter({
                     }
                 })
             }
+        }),
+    clearCart: protectedProcedure
+        .mutation(async ({ ctx }) => {
+            const { prisma, client } = ctx;
+
+            return await prisma.productsInCart.deleteMany({
+                where: {
+                    clientId: client.clientId
+                }
+            }) 
         }),
 });
