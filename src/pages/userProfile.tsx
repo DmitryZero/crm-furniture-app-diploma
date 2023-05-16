@@ -9,7 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
-import CompanySearchDaData from "~/components/dadata/CompanySearchDaData";
+import CompanyDaDataSearch from "~/components/dadata/CompanyDaDataSearch";
 
 const UserProfilePage: NextPage = () => {
     const contextController = useContext(UserContext);
@@ -97,7 +97,7 @@ const UserProfilePage: NextPage = () => {
                 <div className="bg-white rounded-xl w-3/4 h-3/4 mx-auto p-5 my-5">
                     <div className="text-xl font-roboto">Мои юридические лица</div>
                     <div className="w-full">
-                        <CompanySearchDaData />
+                        <CompanyDaDataSearch />
                     </div>
                 </div>
             </main>

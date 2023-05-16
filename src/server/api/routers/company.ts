@@ -1,7 +1,4 @@
 import { z } from "zod";
-import { CompanySuggestionType } from "~/components/dadata/CompanySuggestionType";
-import { env } from "~/env.mjs";
-
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const companyRouter = createTRPCRouter({
@@ -9,7 +6,7 @@ export const companyRouter = createTRPCRouter({
         .query(async ({ ctx }) => {
             const { prisma, client } = ctx;
 
-            return await prisma.company.findMany({
+            return await prisma.company.findFirst({
                 where: {
                     clients: {
                         some: {

@@ -26,14 +26,26 @@ export const categoryRouter = createTRPCRouter({
             parentCategoryId: z.string().uuid().nullable()
         }))
         .mutation(async ({ ctx, input }) => {
-            return await ctx.prisma.category.create({
-                data: {
+            return await ctx.prisma.category.upsert({
+                where: {
+                    categoryId: input.categoryId
+                },
+                create: {
                     categoryId: input.categoryId,
                     categoryName: input.categoryName,
-                    parentCategory: {
-                        connect: input.parentCategoryId ? { categoryId: input.parentCategoryId } : undefined
-                    }
-                }
+                    parentCategory: input.parentCategoryId != null ? {
+                        connectOrCreate: {
+                            where: {
+                                categoryId: input.parentCategoryId
+                            },
+                            create: {
+                                categoryId: input.parentCategoryId,
+                                categoryName: input.categoryName,
+                            },
+                        } 
+                    } : undefined
+                },
+                update: {}
             })
         }),
 
@@ -41,11 +53,11 @@ export const categoryRouter = createTRPCRouter({
         .input(z.object({
             parentId: z.string()
         }))
-        .query(({ ctx, input }) => {            
+        .query(({ ctx, input }) => {
             return ctx.prisma.category.findMany({
                 where: {
                     parentCategoryId: input.parentId
                 }
             })
-        })    
+        })
 });

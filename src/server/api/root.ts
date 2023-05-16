@@ -1,7 +1,6 @@
 import { productRouter } from "./routers/product";
 import { categoryRouter } from "./routers/category";
 import { clientRouter } from "./routers/client";
-import { productsInCartRouter } from "./routers/productsInCart";
 import { orderRouter } from "./routers/order";
 import { createTRPCRouter } from "./trpc";
 import { dadataRouter } from "./routers/dadata";

@@ -1,20 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import type { Product, ProductsInCart } from "@prisma/client";
 import { z } from "zod";
 import { env } from "~/env.mjs";
-
-type ElmaOrder = {
-    __id: string,
-    client: [string],
-    order: {
-        rows: [
-            {
-                product: [string]
-                amount: number
-            }
-        ]
-    }
-}
 
 const schema = z.object({
     orderId: z.string().uuid(),
@@ -37,9 +23,6 @@ const schema = z.object({
         }).array()
     })
 })
-
-type TOrderInfo = z.infer<typeof schema>;
-
 
 export const elmaRouter = createTRPCRouter({
     createOrderInElma: protectedProcedure
