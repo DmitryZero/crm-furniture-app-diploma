@@ -6,7 +6,7 @@ export const companyRouter = createTRPCRouter({
         .query(async ({ ctx }) => {
             const { prisma, client } = ctx;
 
-            return await prisma.company.findFirst({
+            return await prisma.company.findMany({
                 where: {
                     clients: {
                         some: {
