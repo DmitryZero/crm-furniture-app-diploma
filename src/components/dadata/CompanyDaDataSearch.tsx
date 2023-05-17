@@ -1,33 +1,61 @@
-import { Autocomplete, TextField } from "@mui/material";
-import { ChangeEvent, useCallback, useEffect, useState } from "react"
+import { Autocomplete, Box, TextField } from "@mui/material";
+import { useEffect, useMemo, useState } from "react"
 import debounce from 'lodash.debounce';
 import { api } from "~/utils/api";
-import SaveIcon from '@mui/icons-material/Save';
-import ClearIcon from '@mui/icons-material/Clear';
 import handleErrors from "~/utils/handleErrors";
-import { Company } from "@prisma/client";
-import CompanyTypeToPrismaCompany from "~/utils/CompanyDTO";
 import { CompanyType } from "~/schemas/CompanyDaDataType";
-import { AppRouter } from "~/server/api/root";
 
 export default function CompanySearchDaData() {
 
-    const [input, setInput] = useState("");
+    const [input, setInput] = useState<string>('');
+    const [value, setValue] = useState<CompanyType | null>(null);
     const [options, setOptions] = useState<CompanyType[]>([]);
+
+    const companyOfClient = api.client.getClientCompany.useQuery(undefined, {                               
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        refetchOnReconnect: false,
+        onSuccess: (data) => {
+
+            if (data && data.company?.companyName) {
+                setValue({
+                    value: data?.company?.companyName,
+                    data: {
+                        address: {
+                            value: data.company.address
+                        },
+                        inn: data?.company?.inn
+                    } 
+                })
+                setInput(data.company.companyName)
+            }            
+        }    
+    })
 
     const getCompaniesFromDaData = api.dadata.findCompaniesByInfo.useQuery({ query: input }, {
         enabled: false,
     });
+    const addCompanyToClient = api.company.addCompanyToClient.useMutation();
+    const removeCompanyToClient = api.client.removeCompanyFromClient.useMutation();
+
+    const fetch = useMemo(() => debounce(async () => {
+        const companies = await getCompaniesFromDaData.refetch();
+        if (companies.data) setOptions(companies.data.suggestions);
+    }, 400), []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const {data: companies} = await getCompaniesFromDaData.refetch();  
-            if (companies) setOptions(companies.suggestions);                      
-        }
+        fetch()?.catch((e) => console.log(e));        
+    }, [input, value, fetch])
 
-        fetchData()
-            .catch(console.error);
-    }, [input])
+    const handleSelect = handleErrors(async (value: CompanyType | null) => {
+        if (value && value.value && value.data && value.data.inn && value.data.address && value.data.address.value) {
+            await addCompanyToClient.mutateAsync({
+                companyName: value.value,
+                address: value.data.address.value,
+                inn: value.data.inn
+            })
+        } else await removeCompanyToClient.mutateAsync();
+    })
 
     return (
         <>
@@ -37,9 +65,38 @@ export default function CompanySearchDaData() {
                 id="combo-box-demo"
                 options={options}
                 getOptionLabel={(option) => option.value}
-                renderInput={(params) => <TextField {...params} label="Movie" />}
-                onChange={(event, value) => setInput(value?.value || "")}
+                renderOption={(props, option) => (
+                    <Box component="li" {...props} key={option.data.inn}>
+                        <div>
+                            {option.value}
+                            <div className="flex flex-row gap-2 text-xs">
+                                <div>{option.data.inn}</div>
+                                <div>{option.data.address.value}</div>
+                            </div>
+                        </div>
+                    </Box>
+                )}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Выберите компанию"
+                    />
+                )}
+                value={value}
                 filterOptions={(x) => x}
+                autoComplete
+                includeInputInList
+                filterSelectedOptions
+                noOptionsText="Нет подходящих компаний"
+                onChange={(event: any, newValue: CompanyType | null) => {
+                    setOptions(newValue ? [newValue, ...options] : options);
+                    setValue(newValue);
+                    handleSelect(newValue);
+                }}
+                onInputChange={(event, newInputValue) => {
+                    setInput(newInputValue);
+                }}
+                isOptionEqualToValue={(option, current) => value?.data.inn === current.data.inn && value.data.address === current.data.address}
             />
         </>
     )

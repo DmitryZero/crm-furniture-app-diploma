@@ -35,7 +35,6 @@ export default function SignInModal({ state, setOpen }: IProps) {
 
     const signInRequest = api.client.signIn.useMutation()
 
-    const [enabledRequest, setEnableRequest] = React.useState(false);
     api.client.getClientByCookie.useQuery(undefined, {
         enabled: false
     });

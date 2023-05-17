@@ -44,7 +44,7 @@ const ProductSearchPage: NextPage = () => {
             <ProductsFilterCard setQuery={setQuery} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} categoryId={categoryId} setCategoryId={setCategoryId} />
           </div>
           <div className="col-span-9 grid grid-cols-3 gap-5 auto-rows-fr">
-            {products && products?.map(product => {
+            {products && products.map(product => {
               return (
                 <ProductCard key={product.productId} product={product} />
               )

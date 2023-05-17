@@ -1,5 +1,5 @@
-import { Accordion, AccordionDetails, AccordionSummary, FormControl, FormControlLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, Typography } from "@mui/material";
-import { Product, ProductsInCart } from "@prisma/client";
+import { Accordion, AccordionDetails, AccordionSummary, FormControlLabel, Switch, Typography } from "@mui/material";
+import { Client, Company, Product, ProductsInCart } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -22,22 +22,22 @@ const orderStatusDict = {
 const UserCartAndOrdersPage: NextPage = () => {
     const [cartProducts, setCartProducts] = useState<(ProductsInCart & { product: Product })[] | undefined>(undefined);
     const [isEntity, setIsEntity] = useState(false);
-    const [currentEntityId, setCurrentEntity] = useState<string>('');
+    const [currentEntity, setCurrentEntity] = useState<Company | null>(null);
 
     const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, { enabled: false });
     const ordersApi = api.order.getAllOdersByClient.useQuery(undefined, { enabled: false });
 
     const createOrderApi = api.order.createOrder.useMutation();
 
-    const companies = api.company.getAllByClient.useQuery(undefined, { enabled: false });
+    const clientCompany = api.client.getClientCompany.useQuery(undefined, { enabled: false });
 
     useEffect(() => {
         const fetchData = async () => {
             const { data } = await cartProductsApi.refetch();
             if (data) setCartProducts(data);
 
-            const { data: companiesData } = await companies.refetch();
-            if (companiesData && companiesData.length > 0) setCurrentEntity(companiesData[0]?.companyId || "");
+            const companyData = await clientCompany.refetch();
+            if (companyData.data) setCurrentEntity(companyData.data.company);
 
             await ordersApi.refetch();
         }
@@ -47,26 +47,25 @@ const UserCartAndOrdersPage: NextPage = () => {
     }, [])
 
     const handleClick = handleErrors(async () => {
-        const summ = cartProducts!.reduce((summ, value) => summ + value.amount * value.product.price, 0)
-        const cartProductsData: { productId: string; amount: number }[] = [];
-        cartProducts?.forEach(item => cartProductsData.push({ productId: item.productId, amount: item.amount }));
+        if (cartProducts && cartProducts?.length > 0) {
+            const summ = cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)
+            const cartProductsData: { productId: string; amount: number }[] = [];
+            cartProducts?.forEach(item => cartProductsData.push({ productId: item.productId, amount: item.amount }));
 
-        await createOrderApi.mutateAsync({
-            summ: summ,
-            cartProducts: cartProductsData,
-            companyId: currentEntityId
-        })
+            await createOrderApi.mutateAsync({
+                summ: summ,
+                cartProducts: cartProductsData,
+                companyId: currentEntity?.companyId || null
+            })
 
-        setCartProducts(undefined);
-        await ordersApi.refetch();
+            setCartProducts(undefined);
+            await ordersApi.refetch();
+        }
+
     });
 
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsEntity(e.target.checked);
-    }
-
-    const handleSelectChange = (e: SelectChangeEvent<string>) => {
-        setCurrentEntity(e.target.value);
     }
 
     return (
@@ -97,30 +96,14 @@ const UserCartAndOrdersPage: NextPage = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                             {
-                                companies.data && companies.data.length > 0 &&
+                                currentEntity &&
                                 <>
                                     <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label="Совершить покупку от имении юр. лица" />
                                     {
                                         isEntity &&
-                                        <FormControl fullWidth className="mb-3">
-                                            <InputLabel id="demo-simple-select-label">Юридическое лицо</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                label="Юридичесое лицо"
-                                                value={currentEntityId}
-                                                onChange={handleSelectChange}
-                                            >
-                                                {
-                                                    companies.data && companies.data?.length > 0 &&
-                                                    companies.data?.map(company => {
-                                                        return (
-                                                            <MenuItem key={company.companyId} value={company.companyId}>{company.companyName}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-                                            </Select>
-                                        </FormControl>
+                                        <div>
+                                            <div>Юридическое лицо: {currentEntity.companyName} {currentEntity?.inn}</div>
+                                        </div>
                                     }
                                 </>
                             }
@@ -161,7 +144,7 @@ const UserCartAndOrdersPage: NextPage = () => {
                         }
                     </div>
                 </main>
-            </CartContext.Provider>
+            </CartContext.Provider >
         </>
     );
 };

@@ -25,48 +25,46 @@ export const companyRouter = createTRPCRouter({
         .mutation(async ({ input, ctx }) => {
             const { prisma, client } = ctx;
 
-            if (client.clientId) {
-                await prisma.company.upsert({
-                    where: {
-                        inn: input.inn
-                    },
-                    update: {
-                        clients: {
-                            connect: {
-                                clientId: client.clientId
-                            }
-                        }
-                    },
-                    create: {
-                        address: input.address,
-                        companyName: input.companyName,
-                        inn: input.inn,
-                        clients: {
-                            connect: {
-                                clientId: client.clientId
-                            }
-                        }
-                    }                    
-                })
-            }
-        }),
-    removeCompanyFromClient: protectedProcedure
-        .input(z.object({ inn: z.string().length(10) }))
-        .mutation(async ({ input, ctx }) => {
-            const { prisma, client } = ctx;
-
-            await prisma.company.update({
+            await prisma.company.upsert({
                 where: {
                     inn: input.inn
                 },
-                data: {
+                update: {
                     clients: {
-                        disconnect: {
+                        connect: {
+                            clientId: client.clientId
+                        }
+                    }
+                },
+                create: {
+                    address: input.address,
+                    companyName: input.companyName,
+                    inn: input.inn,
+                    clients: {
+                        connect: {
                             clientId: client.clientId
                         }
                     }
                 }
             })
+        }),
+    // removeCompanyFromClient: protectedProcedure
+    //     .input(z.object({ inn: z.string().length(10) }))
+    //     .mutation(async ({ input, ctx }) => {
+    //         const { prisma, client } = ctx;
 
-        })
+    //         await prisma.company.update({
+    //             where: {
+    //                 inn: input.inn
+    //             },
+    //             data: {
+    //                 clients: {
+    //                     disconnect: {
+    //                         clientId: client.clientId
+    //                     }
+    //                 }
+    //             }
+    //         })
+
+    //     })
 });

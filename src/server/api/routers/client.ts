@@ -74,5 +74,33 @@ export const clientRouter = createTRPCRouter({
   getInfoAboutClient: protectedProcedure
     .query(({ ctx }) => {
       return ctx.client;
+    }),
+  getClientCompany: protectedProcedure
+    .query(async ({ctx}) => {
+      const {prisma, client} = ctx;
+
+      return await prisma.client.findFirst({
+        where: {
+          clientId: client.clientId
+        },
+        include: {
+          company: true
+        }
+      })
+    }),
+  removeCompanyFromClient: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const {prisma, client} = ctx;
+
+      await prisma.client.update({
+        where: {
+          clientId: client.clientId          
+        },
+        data: {
+          company: {
+            disconnect: true
+          }
+        }
+      })
     })
 });

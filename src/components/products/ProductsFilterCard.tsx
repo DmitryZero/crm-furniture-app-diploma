@@ -1,7 +1,5 @@
-import { api } from "~/utils/api"
 import CategoryTree from "../categoryTree/CategoryTree";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Category } from "@prisma/client";
+import { Dispatch, SetStateAction } from "react";
 import { TextField } from "@mui/material";
 
 interface IProps {
