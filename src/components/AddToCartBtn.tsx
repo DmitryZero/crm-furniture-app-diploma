@@ -9,11 +9,9 @@ import debounce from 'lodash.debounce';
 
 type IProps = {
     productId: string,
-    clickAddItem?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-    clickRemoveItem?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
 }
 
-export default function AddToCardButton({ productId, clickAddItem, clickRemoveItem: clickRemoveIem }: IProps) {
+export default function AddToCardButton({ productId }: IProps) {
     const contextController = useContext(UserContext);
     const [counter, setCounter] = useState(0);
 
@@ -45,7 +43,6 @@ export default function AddToCardButton({ productId, clickAddItem, clickRemoveIt
 
         setCountDbDebounced.current(counter + 1);
         setCounter(counter + 1);
-        if (clickAddItem) clickAddItem(e);
     })
 
     const handleClickRemoveItem = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -53,7 +50,6 @@ export default function AddToCardButton({ productId, clickAddItem, clickRemoveIt
 
         setCountDbDebounced.current(counter - 1);
         setCounter(counter - 1);
-        if (clickRemoveIem) clickRemoveIem(e);
     }
 
     const changeCounterInDb = (value: number) => {
@@ -65,7 +61,7 @@ export default function AddToCardButton({ productId, clickAddItem, clickRemoveIt
     const setCountDbDebounced = useRef(debounce(changeCounterInDb, 1000));
 
     return (
-        <div>
+        <div className='py-5'>
             {contextController.client?.clientId && <div className=''>
                 {counter === 0 &&
                     <Button className='flex justify-center w-fit py-3 px-1 text-white bg-blue-400 hover:bg-red-500

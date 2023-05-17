@@ -51,8 +51,8 @@ const ProductPage: NextPage = () => {
                   <p className="whitespace-pre-line">{product.data.description}</p>
                 </div>
                 <div className="mt-4 rounded-md flex justify-center w-fit flex-col">
-                  <div className="text-red-700 text-2xl">Цена: {Number(product.data.price).toLocaleString()} РУБ.</div>
-                  <AddToCartBtn productId={product.data.productId} />
+                  <div className="text-red-700 text-2xl">Цена: {Number(product.data.price).toLocaleString()} РУБ.</div>                  
+                    <AddToCartBtn productId={product.data.productId} />
                 </div>
               </div>
             </div>

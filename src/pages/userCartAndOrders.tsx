@@ -9,6 +9,8 @@ import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OrderItem from "~/components/cart/OrderItem";
+import OrderTable from "~/components/tables/OrderTable";
+import CartTable from "~/components/tables/CartTable";
 
 const orderStatusDict = {
     distribution: "На распределении",
@@ -24,27 +26,27 @@ const UserCartAndOrdersPage: NextPage = () => {
     const [isEntity, setIsEntity] = useState(false);
     const [currentEntity, setCurrentEntity] = useState<Company | null>(null);
 
-    const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, { enabled: false });
-    const ordersApi = api.order.getAllOdersByClient.useQuery(undefined, { enabled: false });
+    const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, {
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        onSuccess: (data) => {
+            setCartProducts(data);
+        }
+    });
+    const ordersApi = api.order.getAllOdersByClient.useQuery(undefined, {
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true
+    });
+
+    const clientCompany = api.client.getClientCompany.useQuery(undefined, {
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false
+    });
 
     const createOrderApi = api.order.createOrder.useMutation();
-
-    const clientCompany = api.client.getClientCompany.useQuery(undefined, { enabled: false });
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const { data } = await cartProductsApi.refetch();
-            if (data) setCartProducts(data);
-
-            const companyData = await clientCompany.refetch();
-            if (companyData.data) setCurrentEntity(companyData.data.company);
-
-            await ordersApi.refetch();
-        }
-
-        fetchData()
-            .catch(console.error);
-    }, [])
 
     const handleClick = handleErrors(async () => {
         if (cartProducts && cartProducts?.length > 0) {
@@ -52,11 +54,12 @@ const UserCartAndOrdersPage: NextPage = () => {
             const cartProductsData: { productId: string; amount: number }[] = [];
             cartProducts?.forEach(item => cartProductsData.push({ productId: item.productId, amount: item.amount }));
 
-            await createOrderApi.mutateAsync({
+            createOrderApi.mutate({
                 summ: summ,
                 cartProducts: cartProductsData,
-                companyId: currentEntity?.companyId || null
+                companyId: isEntity ? currentEntity?.companyId || null : null
             })
+            console.log(createOrderApi.isLoading);
 
             setCartProducts(undefined);
             await ordersApi.refetch();
@@ -76,73 +79,68 @@ const UserCartAndOrdersPage: NextPage = () => {
                     <meta name="description" content="CRM Furniture" />
                 </Head>
                 <main>
-                    <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                        <div className="text-xl font-roboto">Корзина пользователя</div>
-                        <div>
+                    {
+                        cartProducts && cartProducts.length > 0 &&
+                        <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                            <div className="text-xl font-roboto">Корзина пользователя</div>
+                            <div>
+                                {
+                                    cartProducts && <CartTable productsInCart={cartProducts}/>
+                                }
+                                {
+                                    cartProducts && cartProducts.length > 0 &&
+                                    <div className="text-lg font-roboto my-4">
+                                        Итого: {cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)} РУБ.
+                                    </div>
+                                }
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                {
+                                    currentEntity &&
+                                    <>
+                                        <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label="Совершить покупку от имении юр. лица" />
+                                        {
+                                            isEntity &&
+                                            <div>
+                                                <div>Юридическое лицо: {currentEntity.companyName} {currentEntity?.inn}</div>
+                                            </div>
+                                        }
+                                    </>
+                                }
+                                {
+                                    cartProducts && cartProducts.length > 0 &&
+                                    <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
+                                   hover:text-black transition duration-300 ease-in-out">Заказать</button>
+                                }
+
+                            </div>
+                        </div>
+                    }
+                    {
+                        ordersApi.data && ordersApi.data.length > 0 &&
+                        <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                            <div className="text-xl font-roboto mb-2">Заказы пользователя</div>
                             {
-                                cartProducts
-                                && cartProducts.map(cartProduct => {
+                                ordersApi.data && ordersApi.data.length > 0 &&
+                                ordersApi.data.map(item => {
                                     return (
-                                        <CartItem key={cartProduct.productId} cartProduct={cartProduct} />
-                                    )
+                                        <Accordion key={item.orderId} sx={{border: '1px solid #7C7C7C', borderRadius: '12px'}}>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="panel1a-content"
+                                                id="panel1a-header"
+                                            >
+                                                <Typography>Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <OrderTable order={item} />
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    );
                                 })
                             }
-                            {
-                                cartProducts && cartProducts.length > 0 &&
-                                <div className="text-lg font-roboto">
-                                    Итого: {cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)} РУБ.
-                                </div>
-                            }
                         </div>
-                        <div className="flex flex-col gap-2">
-                            {
-                                currentEntity &&
-                                <>
-                                    <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label="Совершить покупку от имении юр. лица" />
-                                    {
-                                        isEntity &&
-                                        <div>
-                                            <div>Юридическое лицо: {currentEntity.companyName} {currentEntity?.inn}</div>
-                                        </div>
-                                    }
-                                </>
-                            }
-                            {
-                                cartProducts && cartProducts.length > 0 &&
-                                <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
-                                   hover:text-black transition duration-300 ease-in-out">Заказать</button>
-                            }
-
-                        </div>
-                    </div>
-                    <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                        {
-                            ordersApi.data && ordersApi.data.length > 0 &&
-                            ordersApi.data.map(item => {
-                                return (
-                                    <Accordion key={item.orderId}>
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1a-content"
-                                            id="panel1a-header"
-                                        >
-                                            <Typography>Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            {
-                                                item.productsOfOrder &&
-                                                item.productsOfOrder.map(product => {
-                                                    return (
-                                                        <OrderItem key={product.productId} orderProduct={product} />
-                                                    );
-                                                })
-                                            }
-                                        </AccordionDetails>
-                                    </Accordion>
-                                );
-                            })
-                        }
-                    </div>
+                    }
                 </main>
             </CartContext.Provider >
         </>

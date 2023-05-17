@@ -79,7 +79,7 @@ export const orderRouter = createTRPCRouter({
         .query(async ({ ctx }) => {
             const { prisma, client } = ctx;
 
-            return await prisma.order.findMany({
+            const orders = await prisma.order.findMany({
                 where: {
                     clientId: client.clientId
                 },
@@ -91,6 +91,8 @@ export const orderRouter = createTRPCRouter({
                     }
                 }
             })
+
+            return orders.reverse();            
         }),
     updateOrderStatus: elmaProcedure
         .input(z.object({
