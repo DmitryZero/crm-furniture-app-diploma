@@ -43,7 +43,10 @@ const UserCartAndOrdersPage: NextPage = () => {
     const clientCompany = api.client.getClientCompany.useQuery(undefined, {
         refetchOnMount: true,
         refetchOnWindowFocus: false,
-        refetchOnReconnect: false
+        refetchOnReconnect: false,
+        onSuccess(data) {
+            if (data) setCurrentEntity(data.company);
+        },
     });
 
     const createOrderApi = api.order.createOrder.useMutation();
@@ -81,15 +84,15 @@ const UserCartAndOrdersPage: NextPage = () => {
                 <main>
                     {
                         cartProducts && cartProducts.length > 0 &&
-                        <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                            <div className="text-xl font-roboto">Корзина пользователя</div>
+                        <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                            <div className="font-roboto">Корзина пользователя</div>
                             <div>
                                 {
                                     cartProducts && <CartTable productsInCart={cartProducts}/>
                                 }
                                 {
                                     cartProducts && cartProducts.length > 0 &&
-                                    <div className="text-lg font-roboto my-4">
+                                    <div className="font-roboto my-4">
                                         Итого: {cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)} РУБ.
                                     </div>
                                 }
@@ -98,18 +101,12 @@ const UserCartAndOrdersPage: NextPage = () => {
                                 {
                                     currentEntity &&
                                     <>
-                                        <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label="Совершить покупку от имении юр. лица" />
-                                        {
-                                            isEntity &&
-                                            <div>
-                                                <div>Юридическое лицо: {currentEntity.companyName} {currentEntity?.inn}</div>
-                                            </div>
-                                        }
+                                        <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label={`Совершить покупку от имении ${currentEntity.companyName} ${currentEntity?.inn}`} />
                                     </>
                                 }
                                 {
                                     cartProducts && cartProducts.length > 0 &&
-                                    <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-blue-400 hover:bg-red-500
+                                    <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-primary hover:bg-accent
                                    hover:text-black transition duration-300 ease-in-out">Заказать</button>
                                 }
 
@@ -118,8 +115,8 @@ const UserCartAndOrdersPage: NextPage = () => {
                     }
                     {
                         ordersApi.data && ordersApi.data.length > 0 &&
-                        <div className="bg-white w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                            <div className="text-xl font-roboto mb-2">Заказы пользователя</div>
+                        <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                            <div className="font-roboto mb-2">Заказы пользователя</div>
                             {
                                 ordersApi.data && ordersApi.data.length > 0 &&
                                 ordersApi.data.map(item => {
@@ -130,7 +127,7 @@ const UserCartAndOrdersPage: NextPage = () => {
                                                 aria-controls="panel1a-content"
                                                 id="panel1a-header"
                                             >
-                                                <Typography>Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
+                                                <Typography className="text-sm">Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
                                                 <OrderTable order={item} />

@@ -13,7 +13,7 @@ interface IProps {
 export default function ProductsFilterCard({categoryId, setCategoryId, setMinPrice, setMaxPrice, setQuery}: IProps) {
     return (
         <>
-            <div className="bg-white p-3 rounded-md">
+            <div className="bg-secondary p-3 rounded-md">
                 <div>Категории</div>
                 <div className="flex flex-col gap-3">
                     <CategoryTree categoryId={categoryId} setCategoryId={setCategoryId} />

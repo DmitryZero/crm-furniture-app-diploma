@@ -17,6 +17,16 @@ const config = {
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's3.timeweb.com',
+        port: '',
+        pathname: '/20cfe9d7-88c48566-e308-40dc-955b-40993cb67284/**',
+      },
+    ],
   }
 };
 export default config;

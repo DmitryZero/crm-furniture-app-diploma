@@ -8,7 +8,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+      <main className="py-5 min-h-[80vh] bg-background">{children}</main>
       <Footer />
     </>
   )

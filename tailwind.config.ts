@@ -5,9 +5,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary": "#060606",
-        "secondary": "#FF5A00",
-        "tertiary": "#d4c047"        
+        "background": "#ffffff",
+        "primary": "#29767a",
+        "secondary": "#eceeef",
+        "accent": "#938380",
+        "text": "#101313"
+        // "additional": "#E8ECF0"   
       },      
       fontFamily: {
         'titillium-web': ['Titillium', 'sans-serif'],

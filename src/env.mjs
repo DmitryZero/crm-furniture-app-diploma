@@ -18,7 +18,8 @@ const server = z.object({
  * built with invalid env vars. To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 const client = z.object({
-  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),  
+  // NEXT_PUBLIC_CLIENTVAR: z.string().min(1), 
+  NEXT_PUBLIC_S3_URL: z.string() 
 });
 
 /**
@@ -33,7 +34,8 @@ const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   HASH_KEY: process.env.HASH_KEY,
   ELMA_TOKEN: process.env.ELMA_TOKEN,
-  SHOP_TOKEN: process.env.SHOP_TOKEN
+  SHOP_TOKEN: process.env.SHOP_TOKEN,
+  NEXT_PUBLIC_S3_URL: process.env.NEXT_PUBLIC_S3_URL
   // DADATA_API_KEY: process.env.DADATA_API_KEY
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };

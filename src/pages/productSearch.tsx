@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
 import ProductCard from "~/components/products/ProductCard";
+import ProductSkeleton from "~/components/products/ProductSkeleton";
 import ProductsFilterCard from "~/components/products/ProductsFilterCard";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
@@ -43,12 +44,16 @@ const ProductSearchPage: NextPage = () => {
           <div className="col-span-3">
             <ProductsFilterCard setQuery={setQuery} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} categoryId={categoryId} setCategoryId={setCategoryId} />
           </div>
-          <div className="col-span-9 grid grid-cols-3 gap-5 auto-rows-fr">
-            {products && products.map(product => {
-              return (
-                <ProductCard key={product.productId} product={product} />
-              )
-            })}
+          <div className="col-span-9 grid grid-cols-3 gap-5 auto-rows-fr items-stretch">
+            {
+              productsApi.isFetching
+                ? Array.from(Array(10), (item, index) => { return (<ProductSkeleton key={index} />) })
+                : products && products.map(product => {
+                  return (
+                    <ProductCard key={product.productId} product={product} />
+                  )
+                })
+            }
           </div>
         </div>
       </main>

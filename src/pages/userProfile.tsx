@@ -60,23 +60,25 @@ const UserProfilePage: NextPage = () => {
                 <meta name="description" content="CRM Furniture" />
             </Head>
             <main>
-                <div className="bg-white rounded-xl w-3/4 h-3/4 mx-auto p-5 my-5 relative">
-                    <div className="absolute right-3 flex flex-row gap-3">
-                        {
-                            isEdit ?
-                                <div onClick={handleSaveAttempt} className="bg-gray-100 w-fit p-2 border-2 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer transition-all">
-                                    <SaveIcon />
-                                </div> :
-                                <div onClick={handleClickEdit} className="bg-gray-100 w-fit p-2 border-2 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer transition-all">
-                                    <EditIcon />
-                                </div>
-                        }
-                        <div onClick={handleLogout} className="bg-gray-100 w-fit p-2 border-2 rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer transition-all">
-                            <LogoutIcon />
+                <div className="bg-secondary rounded-xl w-3/4 h-3/4 mx-auto p-5 my-5 relative">
+                    <div className="grid grid-cols-12 items-center">
+                        <div className="text-xl font-roboto col-span-10">Данные пользователя</div>
+                        <div className="col-span-2 grid grid-cols-2 justify-items-end">
+                            {
+                                isEdit ?
+                                    <div onClick={handleSaveAttempt} className="bg-primary border-2 border-primary w-fit flex justify-center px-3 py-2 rounded-lg hover:bg-secondary cursor-pointer transition-all">
+                                        <SaveIcon />
+                                    </div> :
+                                    <div onClick={handleClickEdit} className="bg-primary border-2 border-primary w-fit flex justify-center px-3 py-2 rounded-lg hover:bg-secondary cursor-pointer transition-all">
+                                        <EditIcon />
+                                    </div>
+                            }
+                            <div onClick={handleLogout} className="col-span-1 bg-primary border-2 border-primary w-fit flex justify-center px-3 py-2 rounded-lg hover:bg-secondary cursor-pointer transition-all">
+                                <LogoutIcon />
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <div className="text-xl font-roboto">Данные пользователя</div>
                         <div className="flex flex-col gap-3 mt-6">
                             <TextField disabled={!isEdit} onChange={(e) => { setFullName(e.target.value) }} value={fullName} id="fullName" label="ФИО" variant="outlined" />
                             <TextField disabled={!isEdit} onChange={(e) => { setEmail(e.target.value) }} value={email} id="email" label="Email" variant="outlined" />
@@ -94,7 +96,7 @@ const UserProfilePage: NextPage = () => {
                         Изменения не были сохранены
                     </Alert>
                 </Snackbar>
-                <div className="bg-white rounded-xl w-3/4 h-3/4 mx-auto p-5 my-5">
+                <div className="bg-secondary rounded-xl w-3/4 h-3/4 mx-auto p-5 my-5">
                     <div className="text-xl font-roboto">Мои юридические лица</div>
                     <div className="w-full">
                         <CompanyDaDataSearch />

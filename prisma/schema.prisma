@@ -34,7 +34,7 @@ model Product {
 
 model Order {
   orderId         String            @id @default(uuid()) @db.Uuid
-  summ            Int
+  summ            Int               @db.Integer
   clientId        String            @db.Uuid
   managerId       String?           @db.Uuid
   orderStatus     OrderStatus
@@ -68,7 +68,7 @@ model Client {
   fullName       String           @db.VarChar(120)
   phone          String?          @db.VarChar(25)
   email          String           @unique @db.VarChar(100)
-  password       String
+  password       String           @db.VarChar(64)
   companyId      String?          @db.Uuid
   company        Company?         @relation(fields: [companyId], references: [companyId])
   orders         Order[]
@@ -85,9 +85,9 @@ model Session {
 
 model Company {
   companyId   String   @id @default(uuid()) @db.Uuid
-  inn         String   @unique
-  companyName String
-  address     String
+  inn         String   @unique @db.VarChar(12)
+  companyName String   @db.VarChar(255)
+  address     String   @db.VarChar(255)
   clients     Client[]
 }
 
