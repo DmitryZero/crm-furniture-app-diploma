@@ -35,7 +35,7 @@ const ProductPage: NextPage = () => {
                   <Image className="object-contain" fill src={`data:image/jpeg;base64, ${product.data.productImg}`} alt="" />
                 </div>
               </div>
-              <div className="bg-white rounded-md p-4">
+              <div className="bg-secondary rounded-md p-4">
                 <div className="text-sm">Артикул: {product.data.vendorCode}</div>
                 <div className="text-4xl font-roboto">{product.data.productName}</div>
                 <div className="mt-4">

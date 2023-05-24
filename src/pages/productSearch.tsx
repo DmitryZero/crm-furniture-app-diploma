@@ -2,7 +2,7 @@ import { Product } from "@prisma/client";
 import debounce from "lodash.debounce";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import ProductCard from "~/components/products/ProductCard";
 import ProductSkeleton from "~/components/products/ProductSkeleton";
 import ProductsFilterCard from "~/components/products/ProductsFilterCard";
@@ -48,11 +48,15 @@ const ProductSearchPage: NextPage = () => {
             {
               productsApi.isFetching
                 ? Array.from(Array(10), (item, index) => { return (<ProductSkeleton key={index} />) })
-                : products && products.map(product => {
+                : products !== undefined && products.length > 0 &&
+                products.map(product => {
                   return (
                     <ProductCard key={product.productId} product={product} />
                   )
                 })
+            }
+            {
+              productsApi.data && productsApi.data.length === 0 && <div className="text-2xl">Нет подходящих элементов</div>
             }
           </div>
         </div>

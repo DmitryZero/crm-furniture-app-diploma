@@ -85,7 +85,7 @@ const UserCartAndOrdersPage: NextPage = () => {
                     {
                         cartProducts && cartProducts.length > 0 &&
                         <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                            <div className="font-roboto">Корзина пользователя</div>
+                            <div className="text-xl">Корзина пользователя</div>
                             <div>
                                 {
                                     cartProducts && <CartTable productsInCart={cartProducts}/>

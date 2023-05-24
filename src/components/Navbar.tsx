@@ -28,7 +28,8 @@ export default function Navbar() {
                             divide-x-[1px]
                           divide-gray-300
                           bg-secondary
-                          sticky top-0 z-10">
+                          sticky top-0 z-10
+                          shadow-md">
                 <Link href="/" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                     <ChairIcon />
                     E-Shop

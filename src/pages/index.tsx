@@ -7,8 +7,6 @@ import { api } from "~/utils/api";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Product } from "@prisma/client";
-import Image from 'next/image';
-import { env } from "~/env.mjs";
 
 const Home: NextPage = () => {
 

@@ -70,10 +70,10 @@ export default function AddToCardButton({ productId }: IProps) {
                     </Button>}
                 {counter !== 0 &&
                     <div className='flex flex-row items-center w-full justify-center text-2xl'>
-                        <Button onClick={handleClickRemoveItem} className='text-secondary hover:bg-secondary
+                        <Button onClick={handleClickRemoveItem} className='bg-primary text-secondary hover:bg-secondary
             hover:text-primary transition duration-300 ease-in-out'><RemoveCircleOutlineIcon fontSize='small' /></Button>
                         <div className='m-3'>{counter}</div>
-                        <Button onClick={handleClickAddItem} className='w-min text-secondary hover:bg-secondary
+                        <Button onClick={handleClickAddItem} className='bg-primary w-min text-secondary hover:bg-secondary
             hover:text-primary transition duration-300 ease-in-out'><AddCircleOutlineIcon fontSize='small' /></Button>
                     </div>
                 }
