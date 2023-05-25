@@ -7,9 +7,13 @@ type LayoutProps = { children?: ReactNode }
 export default function Layout({ children }: LayoutProps) {
   return (
     <>
-      <Navbar />
-      <main className="py-5 min-h-[80vh] bg-background">{children}</main>
-      <Footer />
+      <div className="mx-4">
+        <Navbar />
+        <main className="py-5 min-h-[80vh] bg-background">
+          {children}
+        </main>
+        <Footer />
+      </div>
     </>
   )
 }

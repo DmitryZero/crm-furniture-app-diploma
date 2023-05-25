@@ -58,7 +58,7 @@ export default function AddToCardButton({ productId }: IProps) {
         }
     }
 
-    const setCountDbDebounced = useRef(debounce(changeCounterInDb, 1000));
+    const setCountDbDebounced = useRef(debounce(changeCounterInDb, 300));
 
     return (
         <div className='py-5'>

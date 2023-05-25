@@ -4,6 +4,6 @@
 
 @layer base {
     body {        
-        @apply bg-gray-200 text-sm font-roboto p-0 m-0                                
+        @apply text-sm font-roboto p-0 m-0 bg-[#57C1C8] text-text                        
     }
 }

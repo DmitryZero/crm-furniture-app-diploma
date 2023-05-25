@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import ProductCard from "~/components/products/ProductCard";
-import ProductSkeleton from "~/components/products/ProductSkeleton";
+import ProductCardSkeleton from "~/components/products/ProductCardSkeleton";
 import ProductsFilterCard from "~/components/products/ProductsFilterCard";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
@@ -31,7 +31,7 @@ const ProductSearchPage: NextPage = () => {
     const productsRes = await productsApi.refetch();
     if (productsRes.data) setProducts(productsRes.data);
   })
-  const debounceFn = useCallback(debounce(getFilteredProducts, 500), []);
+  const debounceFn = useCallback(debounce(getFilteredProducts, 200), []);
 
   return (
     <>
@@ -40,14 +40,14 @@ const ProductSearchPage: NextPage = () => {
         <meta name="description" content="CRM Furniture" />
       </Head>
       <main>
-        <div className="px-12 py-6 grid grid-cols-12 gap-12">
+        <div className="px-12 py-6 grid grid-cols-12 gap-12 items-start">
           <div className="col-span-3">
             <ProductsFilterCard setQuery={setQuery} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} categoryId={categoryId} setCategoryId={setCategoryId} />
           </div>
           <div className="col-span-9 grid grid-cols-3 gap-5 auto-rows-fr items-stretch">
             {
               productsApi.isFetching
-                ? Array.from(Array(10), (item, index) => { return (<ProductSkeleton key={index} />) })
+                ? Array.from(Array(10), (item, index) => { return (<ProductCardSkeleton key={index} />) })
                 : products !== undefined && products.length > 0 &&
                 products.map(product => {
                   return (

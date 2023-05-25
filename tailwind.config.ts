@@ -15,7 +15,8 @@ export default {
       fontFamily: {
         'titillium-web': ['Titillium', 'sans-serif'],
         'garamond': ['Garamond', 'serif'],
-        'roboto': ['Roboto', 'sans-serif']
+        'roboto': ['Roboto', 'sans-serif'],
+        'rubik': ['Rubik', 'sans-serif']
       }
     },    
   },

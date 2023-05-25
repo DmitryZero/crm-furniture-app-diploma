@@ -24,7 +24,7 @@ export const productRouter = createTRPCRouter({
       }
       else products = await prisma.product.findMany();
 
-      const priceFilter = products.filter(item => {
+      const priceFilter = (minPrice !== undefined || maxPrice !== undefined) ? products.filter(item => {
         let result = true;
 
         if (categoryId) result = item.categoryId === categoryId;
@@ -33,11 +33,11 @@ export const productRouter = createTRPCRouter({
         if (minPrice && maxPrice) result = item.price >= minPrice && item.price <= maxPrice;
 
         return result;
-      })
+      }) : products;
 
-      const categoryFilter = priceFilter.filter(item => {
+      const categoryFilter = categoryId !== undefined ? priceFilter.filter(item => {
         return !categoryId || (categoryId && item.categoryId === categoryId);
-      })
+      }) : priceFilter;
 
       return categoryFilter;
     }),

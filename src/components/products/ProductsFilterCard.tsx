@@ -75,8 +75,8 @@ export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPr
                     <div className="grid grid-cols-9 gap-3 items-center">
                         <div className="col-span-4 flex gap-2 items-baseline">
                             <div>от</div>
-                            <div>
-                                <input type="text" onChange={(e) => handleInputChange(e, "min")} value={value[0]} className="w-full p-2 rounded-full" />
+                            <div className="">
+                                <input type="text" onChange={(e) => handleInputChange(e, "min")} value={value[0]} className="text-xs w-full p-2 rounded-full" />
                             </div>
                         </div>
                         <div className="h-[1px] w-full bg-primary col-span-1"></div>
@@ -84,7 +84,7 @@ export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPr
                             <div className="col-span-4 flex gap-2 items-baseline">
                                 <div>до</div>
                                 <div>
-                                    <input type="text" onChange={(e) => handleInputChange(e, "max")} value={value[1]} className="w-full p-2 rounded-full" />
+                                    <input type="text" onChange={(e) => handleInputChange(e, "max")} value={value[1]} className="text-xs w-full p-2 rounded-full" />
                                 </div>
                             </div>
                         </div>

@@ -3,7 +3,7 @@ import { Product } from "@prisma/client"
 import Image from 'next/image';
 import Link from "next/link";
 
-export default function ProductSkeleton() {
+export default function ProductCardSkeleton() {
     return (
         <>
             <div className="bg-secondary
