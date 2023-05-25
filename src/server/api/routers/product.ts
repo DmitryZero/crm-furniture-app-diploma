@@ -11,35 +11,26 @@ export const productRouter = createTRPCRouter({
       categoryId: z.string().optional(),
       minPrice: z.number().optional(),
       maxPrice: z.number().optional(),
-      queryName: z.string().optional()
+      queryName: z.string().optional(),
+      size: z.number(),
+      from: z.number()
     }))
     .query(async ({ input, ctx }) => {
       const { prisma } = ctx;
-      const { categoryId, minPrice, maxPrice, queryName } = input;
+      const { categoryId, minPrice, maxPrice, queryName, from, size } = input;
 
-      let products: Product[] = [];
-      if (queryName) {
-        const query = queryName.split(' ').filter(item => item !== "").join(' & ');
-        products = await prisma.product.findMany({ where: { productName: { search:  query} } });
-      }
-      else products = await prisma.product.findMany();
-
-      const priceFilter = (minPrice !== undefined || maxPrice !== undefined) ? products.filter(item => {
-        let result = true;
-
-        if (categoryId) result = item.categoryId === categoryId;
-        if (minPrice) result = item.price >= minPrice;
-        if (maxPrice) result = item.price <= maxPrice;
-        if (minPrice && maxPrice) result = item.price >= minPrice && item.price <= maxPrice;
-
-        return result;
-      }) : products;
-
-      const categoryFilter = categoryId !== undefined ? priceFilter.filter(item => {
-        return !categoryId || (categoryId && item.categoryId === categoryId);
-      }) : priceFilter;
-
-      return categoryFilter;
+      return await prisma.product.findMany({
+        where: {
+          productName: queryName ? queryName : undefined,
+          price: {
+            gte: minPrice ? minPrice : undefined,
+            lte: maxPrice ? maxPrice : undefined
+          },
+          categoryId: categoryId ? categoryId : undefined
+        },
+        skip: from,
+        take: size,      
+      })
     }),
   getById: publicProcedure
     .input(z.object({

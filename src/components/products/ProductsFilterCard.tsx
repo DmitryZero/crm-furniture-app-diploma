@@ -2,19 +2,19 @@ import CategoryTree from "../categoryTree/CategoryTree";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Box, Input, Slider, TextField } from "@mui/material";
 
+interface ProductFilter {
+    minPrice?: number,
+    maxPrice?: number,
+    query?: string,
+    categoryId?: string
+}
+
 interface IProps {
-    categoryId: string,
-    setCategoryId: Dispatch<SetStateAction<string>>,
-    setMinPrice: Dispatch<SetStateAction<number | undefined>>,
-    setMaxPrice: Dispatch<SetStateAction<number | undefined>>,
-    setQuery: Dispatch<SetStateAction<string>>
+    categoryId?: string,
+    setProductFilter?: Dispatch<SetStateAction<ProductFilter>>
 }
 
-function valuetext(value: number) {
-    return `${value}|||`;
-}
-
-export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPrice, setMaxPrice, setQuery }: IProps) {
+export default function ProductsFilterCard({ categoryId, setProductFilter }: IProps) {
     const [value, setValue] = useState<number[]>([0, 100000]);
 
     const maxValue = 100000;
@@ -36,20 +36,19 @@ export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPr
             setValue([value[0]!, Math.max(newValue[1], value[0]! + minDistance)]);
         }
 
-        setMinPrice(newValue[0]);
-        setMaxPrice(newValue[1]);
+        if (setProductFilter) setProductFilter(prevState => ({ ...prevState, minPrice: newValue[0], maxPrice: newValue[1] }));
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>, type: "min" | "max") => {
         const newValue = Number(e.target.value);
         if (isNaN(newValue) || (type === "min" && newValue < minValue) || (type === "max" && newValue > maxValue)) return;
-        
+
         if (type === "min") {
             setValue([Math.min(newValue, value[1]! - minDistance), value[1]!]);
-            setMinPrice(newValue)
+            if (setProductFilter) setProductFilter(prevState => ({ ...prevState, minPrice: newValue}));
         } else {
             setValue([value[0]!, Math.max(newValue, value[0]! + minDistance)]);
-            setMaxPrice(newValue);
+            if (setProductFilter) setProductFilter(prevState => ({ ...prevState, maxPrice: newValue}));
         }
     }
 
@@ -58,14 +57,13 @@ export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPr
             <div className="bg-secondary p-6 rounded-md shadow-md">
                 <div className="text-xl">Категории</div>
                 <div className="flex flex-col gap-3">
-                    <CategoryTree categoryId={categoryId} setCategoryId={setCategoryId} />
+                    {/* <CategoryTree categoryId={categoryId} setCategoryId={setCategoryId} /> */}
                     <Box className="px-5">
                         <Slider
                             // getAriaLabel={() => 'Minimum distance'}
                             value={value}
                             onChange={handleChange}
                             valueLabelDisplay="auto"
-                            getAriaValueText={valuetext}
                             disableSwap
                             min={0}
                             max={100000}
@@ -89,7 +87,7 @@ export default function ProductsFilterCard({ categoryId, setCategoryId, setMinPr
                             </div>
                         </div>
                     </div>
-                    <TextField onChange={(e) => setQuery(e.target.value)} type="text" id="query" label="Название" variant="standard" />
+                    {/* <TextField onChange={(e) => setQuery(e.target.value)} type="text" id="query" label="Название" variant="standard" /> */}
                 </div>
             </div>
         </>

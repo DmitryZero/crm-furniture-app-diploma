@@ -32,9 +32,7 @@ const Home: NextPage = () => {
             </Link>
           </div>
           <div className="col-span-3 flex relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
-            <div className="">
               <Image className="object-contain p-4" fill src={`data:image/jpeg;base64, ${props.productImg}`} alt="" />
-            </div>
           </div>
         </div>
 
