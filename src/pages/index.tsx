@@ -20,8 +20,8 @@ const Home: NextPage = () => {
 
   function Item(props: Product) {
     return (
-      <Paper className="h-[300px] p-4 bg-secondary rounded-xl relative">
-        <div className="grid grid-cols-12 gap-2">
+      <Paper className="min-h-fit p-4 bg-secondary rounded-xl relative">
+        <div className="grid grid-cols-12 gap-2 justify-items-end">
           <div className="col-span-9">
             <div className="text-3xl font-rubik">{props.productName}</div>
             <div>
@@ -31,7 +31,7 @@ const Home: NextPage = () => {
               <VisibilityIcon /> Подробнее
             </Link>
           </div>
-          <div className="col-span-3 flex relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
+          <div className="col-span-3 flex justify-center h-[300px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
               <Image className="object-contain p-4" fill src={`data:image/jpeg;base64, ${props.productImg}`} alt="" />
           </div>
         </div>

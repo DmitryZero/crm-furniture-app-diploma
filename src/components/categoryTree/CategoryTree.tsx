@@ -10,19 +10,20 @@ import { TCategoryTree, generateCategoryTree } from "~/utils/generateCategoryTre
 import CategoryNodes from "./CategoryNodes";
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import IFilter from "~/interfaces/IFilter";
 
 interface IProps {
-    categoryId: string,
-    setCategoryId: Dispatch<SetStateAction<string>> 
+    categoryId: string | undefined,
+    setProductFilter?: Dispatch<SetStateAction<IFilter>>,
 }
 
-export default function CategoryTree({categoryId, setCategoryId}: IProps) {
+export default function CategoryTree({categoryId, setProductFilter}: IProps) {
     const [categoryTree, setCategoryTree] = useState<TCategoryTree | undefined>(undefined);
     const allCategories = api.category.getAll.useQuery(undefined, {
         enabled: false
     });
 
-    const currentIcon = categoryId === '' ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />;  
+    const currentIcon = categoryId === undefined ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />;  
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,6 +35,10 @@ export default function CategoryTree({categoryId, setCategoryId}: IProps) {
             .catch(console.error);
     }, [])
 
+    const handleCategoryChange = (categoryId: string | undefined) => {        
+        if (setProductFilter) setProductFilter((prevValue) => ({...prevValue, currentFilter: ({...prevValue.currentFilter, categoryId: categoryId})}));
+    }
+
     return (
         <>
             {
@@ -43,11 +48,11 @@ export default function CategoryTree({categoryId, setCategoryId}: IProps) {
                         defaultCollapseIcon={<ExpandMoreIcon />}
                         defaultExpandIcon={<ChevronRightIcon />}
                     >
-                        <TreeItem icon={currentIcon} onClick={() => setCategoryId('')} label="Все категории" nodeId="0"/>
+                        <TreeItem icon={currentIcon} onClick={() => handleCategoryChange(undefined)} label="Все категории" nodeId="0"/>
                         {
                             categoryTree.categoryNode.map(node => {
                                 return (
-                                    <CategoryNodes categoryId={categoryId} setCategoryId={setCategoryId} key={node.category.categoryId} node={node} />
+                                    <CategoryNodes categoryId={categoryId} setProductFilter={setProductFilter} key={node.category.categoryId} node={node} />
                                 );
                             })
                         }

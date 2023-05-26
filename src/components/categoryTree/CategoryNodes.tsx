@@ -3,15 +3,20 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TCategoryNode } from "~/utils/generateCategoryTree";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import IFilter from "~/interfaces/IFilter";
 
 interface IProps {
     node: TCategoryNode,
-    categoryId: string,
-    setCategoryId: Dispatch<SetStateAction<string>> 
+    categoryId: string | undefined,
+    setProductFilter?: Dispatch<SetStateAction<IFilter>>,
 }
 
-export default function CategoryNodes({ node, categoryId, setCategoryId }: IProps) {
-    const currentIcon = node.category.categoryId === categoryId ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />;    
+export default function CategoryNodes({ node, categoryId, setProductFilter }: IProps) {
+    const currentIcon = node.category.categoryId === categoryId ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />;
+
+    const handleCategoryChange = (categoryId: string | undefined) => {
+        if (setProductFilter) setProductFilter((prevValue) => ({ ...prevValue, currentFilter: ({ ...prevValue.currentFilter, categoryId: categoryId }) }));
+    }
 
     return (
         <>
@@ -22,12 +27,12 @@ export default function CategoryNodes({ node, categoryId, setCategoryId }: IProp
                             node.childrenNodes && node.childrenNodes.length > 0 &&
                             node.childrenNodes.map(child => {
                                 return (
-                                    <CategoryNodes categoryId={categoryId} setCategoryId={setCategoryId} key={child.category.categoryId} node={child} />
+                                    <CategoryNodes categoryId={categoryId} setProductFilter={setProductFilter} key={child.category.categoryId} node={child} />
                                 )
                             })
                         }
                     </TreeItem> :
-                    <TreeItem icon={currentIcon} label={node.category.categoryName} onClick={() => setCategoryId(node.category.categoryId)} nodeId={node.category.categoryId}/>
+                    <TreeItem icon={currentIcon} label={node.category.categoryName} onClick={() => handleCategoryChange(node.category.categoryId)} nodeId={node.category.categoryId} />
             }
 
         </>

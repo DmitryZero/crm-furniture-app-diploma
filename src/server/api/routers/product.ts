@@ -12,25 +12,31 @@ export const productRouter = createTRPCRouter({
       minPrice: z.number().optional(),
       maxPrice: z.number().optional(),
       queryName: z.string().optional(),
+      page: z.number(),
       size: z.number(),
-      from: z.number()
+      isNewFilterRequest: z.boolean().default(false)
     }))
     .query(async ({ input, ctx }) => {
       const { prisma } = ctx;
-      const { categoryId, minPrice, maxPrice, queryName, from, size } = input;
+      const { categoryId, minPrice, maxPrice, queryName, page, size, isNewFilterRequest: isFirstRequset } = input;
 
-      return await prisma.product.findMany({
-        where: {
-          productName: queryName ? queryName : undefined,
-          price: {
-            gte: minPrice ? minPrice : undefined,
-            lte: maxPrice ? maxPrice : undefined
-          },
-          categoryId: categoryId ? categoryId : undefined
+      let query: string | undefined = undefined;
+      if (queryName) query = queryName.split(' ').filter(item => item !== "").join(' & ');
+
+      const whereOptions = {
+        productName: queryName ? { search: query } : undefined,
+        price: {
+          gte: minPrice ? minPrice : undefined,
+          lte: maxPrice ? maxPrice : undefined,
         },
-        skip: from,
-        take: size,      
-      })
+        categoryId: categoryId ? categoryId : undefined
+      }
+
+      const [count, data] = await Promise.all([
+        (isFirstRequset ? prisma.product.count({ where: whereOptions }) : undefined),
+        prisma.product.findMany({ where: whereOptions, skip: (page - 1) * size, take: size })
+      ])
+      return await { count: count, productData: data }
     }),
   getById: publicProcedure
     .input(z.object({
