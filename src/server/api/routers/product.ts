@@ -36,7 +36,7 @@ export const productRouter = createTRPCRouter({
         (isFirstRequset ? prisma.product.count({ where: whereOptions }) : undefined),
         prisma.product.findMany({ where: whereOptions, skip: (page - 1) * size, take: size })
       ])
-      return await { count: count, productData: data }
+      return { count: count, productData: data }
     }),
   getById: publicProcedure
     .input(z.object({

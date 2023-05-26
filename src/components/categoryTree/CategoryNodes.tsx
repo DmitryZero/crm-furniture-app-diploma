@@ -1,9 +1,10 @@
 import { TreeItem } from "@mui/lab";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { TCategoryNode } from "~/utils/generateCategoryTree";
+import type { Dispatch, SetStateAction } from "react";
+import React from "react";
+import type { TCategoryNode } from "~/utils/generateCategoryTree";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import IFilter from "~/interfaces/IFilter";
+import type IFilter from "~/interfaces/IFilter";
 
 interface IProps {
     node: TCategoryNode,

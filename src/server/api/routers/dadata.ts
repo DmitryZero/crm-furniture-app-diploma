@@ -2,14 +2,14 @@ import { z } from "zod";
 import { env } from "~/env.mjs";
 import { CompanySuggestionTypeSchema } from "~/schemas/CompanyDaDataType";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const dadataRouter = createTRPCRouter({
     findCompaniesByInfo: protectedProcedure
         .input(z.object({
             query: z.string()
         }))
-        .query(async ({ ctx, input }) => {
+        .query(async ({ input }) => {
             const url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party";
             const token = env.DADATA_API_KEY;
 

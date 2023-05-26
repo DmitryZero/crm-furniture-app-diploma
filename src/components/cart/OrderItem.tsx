@@ -1,6 +1,5 @@
-import { Product, productsOfOrder } from "@prisma/client"
+import type { Product, productsOfOrder } from "@prisma/client"
 import Image from 'next/image';
-import AddToCardButton from "../AddToCartBtn";
 
 interface IProps {
     orderProduct: productsOfOrder & {

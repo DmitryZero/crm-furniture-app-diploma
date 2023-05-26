@@ -1,14 +1,12 @@
 import { Accordion, AccordionDetails, AccordionSummary, FormControlLabel, Switch, Typography } from "@mui/material";
-import { Client, Company, Product, ProductsInCart } from "@prisma/client";
+import type { Company, Product, ProductsInCart } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CartContext from "~/Context/CartContext";
-import CartItem from "~/components/cart/CartItem";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import OrderItem from "~/components/cart/OrderItem";
 import OrderTable from "~/components/tables/OrderTable";
 import CartTable from "~/components/tables/CartTable";
 
@@ -26,7 +24,7 @@ const UserCartAndOrdersPage: NextPage = () => {
     const [isEntity, setIsEntity] = useState(false);
     const [currentEntity, setCurrentEntity] = useState<Company | null>(null);
 
-    const cartProductsApi = api.cart.getCartsItems.useQuery(undefined, {
+    api.cart.getCartsItems.useQuery(undefined, {
         refetchOnMount: true,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
@@ -40,7 +38,7 @@ const UserCartAndOrdersPage: NextPage = () => {
         refetchOnReconnect: true
     });
 
-    const clientCompany = api.client.getClientCompany.useQuery(undefined, {
+    api.client.getClientCompany.useQuery(undefined, {
         refetchOnMount: true,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,

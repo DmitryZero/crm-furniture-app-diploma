@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { setCookie, deleteCookie, getCookie } from 'cookies-next';
+import { setCookie, deleteCookie } from 'cookies-next';
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import UserController from "~/auth/UserController";
@@ -76,8 +76,8 @@ export const clientRouter = createTRPCRouter({
       return ctx.client;
     }),
   getClientCompany: protectedProcedure
-    .query(async ({ctx}) => {
-      const {prisma, client} = ctx;
+    .query(async ({ ctx }) => {
+      const { prisma, client } = ctx;
 
       return await prisma.client.findFirst({
         where: {
@@ -90,11 +90,11 @@ export const clientRouter = createTRPCRouter({
     }),
   removeCompanyFromClient: protectedProcedure
     .mutation(async ({ ctx }) => {
-      const {prisma, client} = ctx;
+      const { prisma, client } = ctx;
 
       await prisma.client.update({
         where: {
-          clientId: client.clientId          
+          clientId: client.clientId
         },
         data: {
           company: {

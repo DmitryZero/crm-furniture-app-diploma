@@ -1,15 +1,13 @@
-import { Product, ProductsInCart } from "@prisma/client"
+import type { Product, ProductsInCart } from "@prisma/client"
 import Image from 'next/image';
 import AddToCardButton from "../AddToCartBtn";
-import CartContext from "~/Context/CartContext";
-import { useContext } from "react";
 
 interface IProps {
     cartProduct: ProductsInCart & { product: Product },    
 }
 
 export default function CartItem({ cartProduct }: IProps) {    
-    const contextController = useContext(CartContext);
+    // const contextController = useContext(CartContext);
 
     return (
         <>

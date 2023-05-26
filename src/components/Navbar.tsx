@@ -2,7 +2,6 @@ import ChairIcon from '@mui/icons-material/Chair';
 import CategoryIcon from '@mui/icons-material/Category';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PersonIcon from '@mui/icons-material/Person';
-import SearchBar from './SearchBar';
 import Link from 'next/link';
 import { Badge } from '@mui/material';
 import { useContext, useState } from 'react';

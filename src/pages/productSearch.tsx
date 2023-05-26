@@ -1,16 +1,14 @@
-import { Button, Pagination } from "@mui/material";
-import { Product } from "@prisma/client";
+import { Pagination } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import type { ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "~/components/products/ProductCard";
 import ProductCardSkeleton from "~/components/products/ProductCardSkeleton";
 import ProductsFilterCard from "~/components/products/ProductsFilterCard";
-import IFilter from "~/interfaces/IFilter";
-import IPagination from "~/interfaces/IPagination";
-import IProductsPage from "~/interfaces/IProductPage";
+import type IFilter from "~/interfaces/IFilter";
+import type IPagination from "~/interfaces/IPagination";
+import type IProductsPage from "~/interfaces/IProductPage";
 import { api } from "~/utils/api";
 
 const ProductSearchPage: NextPage = () => {
@@ -38,7 +36,7 @@ const ProductSearchPage: NextPage = () => {
   });
 
   const productsSearch = async () => {
-    const { data } = await refetch();    
+    const { data } = await refetch();
     if (data?.productData) {
       setProductsData(prevValue => ({
         ...prevValue,
@@ -55,7 +53,7 @@ const ProductSearchPage: NextPage = () => {
   };
 
   useEffect(() => {
-    productsSearch();
+    productsSearch().catch(err => console.log(err));
   }, [refresh])
 
   const handlePageChange = (e: ChangeEvent<unknown>, p: number) => {

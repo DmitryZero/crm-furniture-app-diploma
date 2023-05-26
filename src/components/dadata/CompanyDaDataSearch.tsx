@@ -1,9 +1,10 @@
 import { Autocomplete, Box, TextField } from "@mui/material";
 import { useEffect, useMemo, useState } from "react"
+import type { SyntheticEvent } from "react"
 import debounce from 'lodash.debounce';
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
-import { CompanyType } from "~/schemas/CompanyDaDataType";
+import type { CompanyType } from "~/schemas/CompanyDaDataType";
 
 export default function CompanySearchDaData() {
 
@@ -11,7 +12,7 @@ export default function CompanySearchDaData() {
     const [value, setValue] = useState<CompanyType | null>(null);
     const [options, setOptions] = useState<CompanyType[]>([]);
 
-    const companyOfClient = api.client.getClientCompany.useQuery(undefined, {                               
+    api.client.getClientCompany.useQuery(undefined, {                               
         refetchOnWindowFocus: false,
         refetchOnMount: true,
         refetchOnReconnect: false,
@@ -88,7 +89,7 @@ export default function CompanySearchDaData() {
                 includeInputInList
                 filterSelectedOptions
                 noOptionsText="Нет подходящих компаний"
-                onChange={(event: any, newValue: CompanyType | null) => {
+                onChange={(event: SyntheticEvent<Element, Event>, newValue: CompanyType | null) => {
                     setOptions(newValue ? [newValue, ...options] : options);
                     setValue(newValue);
                     handleSelect(newValue);

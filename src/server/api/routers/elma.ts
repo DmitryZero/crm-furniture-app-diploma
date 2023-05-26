@@ -2,28 +2,6 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 import { env } from "~/env.mjs";
 
-const schema = z.object({
-    orderId: z.string().uuid(),
-    client: z.object({
-        clientId: z.string().uuid(),
-        fullName: z.string(),
-        phone: z.string(),
-        email: z.string().email()
-    }),
-    company: z.object({
-        companyId: z.string().uuid(),
-        inn: z.string(),
-        address: z.string(),
-        companyName: z.string()
-    }).nullable(),
-    orderTable: z.object({
-        rows: z.object({
-            productId: z.string().uuid(),
-            amount: z.number()
-        }).array()
-    })
-})
-
 export const elmaRouter = createTRPCRouter({
     createOrderInElma: protectedProcedure
         .input(z.object({

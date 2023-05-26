@@ -1,8 +1,6 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Order, productsOfOrder, Product, ProductsInCart } from "@prisma/client";
+import type { Product, ProductsInCart } from "@prisma/client";
 import Image from 'next/image';
-import AddToCardButton from "../AddToCartBtn";
-import { Dispatch, SetStateAction } from "react";
 
 interface IProps {
     productsInCart: (ProductsInCart & {

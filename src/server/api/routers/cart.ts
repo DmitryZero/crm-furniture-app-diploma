@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const cartRouter = createTRPCRouter({
     getCartsItems: protectedProcedure
@@ -38,7 +38,7 @@ export const cartRouter = createTRPCRouter({
             amount: z.number().nonnegative()
         }))
         .mutation(async ({ input, ctx }) => {
-            const { prisma, client } = ctx;
+            const { client } = ctx;
 
             if (input.amount > 0) {
                 return await ctx.prisma.productsInCart.upsert({
@@ -80,6 +80,6 @@ export const cartRouter = createTRPCRouter({
                 where: {
                     clientId: client.clientId
                 }
-            }) 
+            })
         }),
 });

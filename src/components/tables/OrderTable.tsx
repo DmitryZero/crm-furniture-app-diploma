@@ -1,5 +1,5 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Order, productsOfOrder, Product } from "@prisma/client";
+import type { Order, productsOfOrder, Product } from "@prisma/client";
 import Image from 'next/image';
 
 interface IProps {

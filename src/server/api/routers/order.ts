@@ -1,7 +1,6 @@
 import { createTRPCRouter, elmaProcedure, protectedProcedure } from "~/server/api/trpc";
 import { OrderStatus } from "@prisma/client";
 import { z } from "zod";
-import { env } from "~/env.mjs";
 import { elmaRouter } from "./elma";
 import { cartRouter } from "./cart";
 

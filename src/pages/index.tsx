@@ -1,19 +1,18 @@
-import { Backdrop, Button, CircularProgress, Paper } from "@mui/material";
+import { Paper } from "@mui/material";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
 import Carousel from "react-material-ui-carousel";
 import { api } from "~/utils/api";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Product } from "@prisma/client";
+import type { Product } from "@prisma/client";
 import Image from 'next/image';
 import Link from "next/link";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Home: NextPage = () => {
 
-  const { data: productData, isFetching } = api.product.getAll.useQuery(undefined, {
+  const { data: productData } = api.product.getAll.useQuery(undefined, {
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });

@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import type { Product } from "@prisma/client";
 
 export default interface IProductsPage {
     products: Product[],

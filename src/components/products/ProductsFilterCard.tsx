@@ -1,8 +1,9 @@
 import CategoryTree from "../categoryTree/CategoryTree";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { Box, Button, Input, Slider, TextField } from "@mui/material";
+import type { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import { Box, Button, Slider, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import IFilter from "~/interfaces/IFilter";
+import type IFilter from "~/interfaces/IFilter";
 
 interface IProps {
     categoryId?: string,
@@ -27,9 +28,9 @@ export default function ProductsFilterCard({ categoryId, setProductFilter, handl
         }
 
         if (activeThumb === 0) {
-            setValue([Math.min(newValue[0], value[1]! - minDistance), value[1]!]);
+            setValue([Math.min(newValue[0], (value[1] || 0) - minDistance), (value[1] || 0)]);
         } else {
-            setValue([value[0]!, Math.max(newValue[1], value[0]! + minDistance)]);
+            setValue([(value[0] || 0), Math.max(newValue[1], (value[0] || 0) + minDistance)]);
         }
 
         if (setProductFilter) setProductFilter(prevState => ({
@@ -47,7 +48,7 @@ export default function ProductsFilterCard({ categoryId, setProductFilter, handl
         if (isNaN(newValue) || (type === "min" && newValue < minValue) || (type === "max" && newValue > maxValue)) return;
 
         if (type === "min") {
-            setValue([Math.min(newValue, value[1]! - minDistance), value[1]!]);
+            setValue([Math.min(newValue, (value[1] || 0) - minDistance), (value[1] || 0)]);
             if (setProductFilter) setProductFilter(prevState => ({
                 ...prevState,
                 currentFilter: {
@@ -57,7 +58,7 @@ export default function ProductsFilterCard({ categoryId, setProductFilter, handl
             }));
             if (setProductFilter) setProductFilter(prevState => ({ ...prevState, minPrice: newValue }));
         } else {
-            setValue([value[0]!, Math.max(newValue, value[0]! + minDistance)]);
+            setValue([(value[0] || 0), Math.max(newValue, (value[0] || 0) + minDistance)]);
             if (setProductFilter) setProductFilter(prevState => ({
                 ...prevState,
                 currentFilter: {

@@ -1,4 +1,4 @@
-import ProductFilter from "./ProductFilter";
+import type ProductFilter from "./ProductFilter";
 
 export default interface IFilter {
     savedFilter: ProductFilter,
