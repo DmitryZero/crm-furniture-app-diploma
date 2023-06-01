@@ -1,6 +1,7 @@
 import { Product } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { s3router } from "./s3";
 
 export const productRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -76,6 +77,14 @@ export const productRouter = createTRPCRouter({
       productImg: z.string()
     }))
     .mutation(async ({ ctx, input }) => {
+      const caller = s3router.createCaller(ctx);
+      const res = await caller.createFile({
+        elmaId: input.productId,
+        body: input.productImg
+      });
+
+      if (res?.$metadata.httpStatusCode !== 200) return "S3 Error";
+
       return await ctx.prisma.product.create({
         data: {
           productId: input.productId,

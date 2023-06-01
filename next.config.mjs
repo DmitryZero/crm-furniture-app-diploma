@@ -24,7 +24,7 @@ const config = {
         protocol: 'https',
         hostname: 's3.timeweb.com',
         port: '',
-        pathname: '/20cfe9d7-88c48566-e308-40dc-955b-40993cb67284/**',
+        pathname: '/20cfe9d7-4e92dd2d-b37c-40d6-8b1c-eb18156e07b3/**',
       },
     ],
   }

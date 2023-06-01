@@ -27,7 +27,9 @@ export default function CartTable({ productsInCart }: IProps) {
                         productsInCart.map((productInCart) => (
                             <TableRow key={productInCart.productId}>
                                 <TableCell component="th" scope="row" align="left">
-                                    <Image src={`data:image/jpeg;base64, ${productInCart.product.productImg}`} className='rounded-full col-span-1 p-2' width={100} height={100} alt=""></Image>
+                                    <div className="flex justify-center h-[100px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
+                                        <Image src={`data:image/jpeg;base64, ${productInCart.product.productImg}`} className='object-contain p-4' fill alt=""></Image>
+                                    </div>
                                 </TableCell>
                                 <TableCell align="left">{productInCart.product.productName}</TableCell>
                                 <TableCell align="right">
