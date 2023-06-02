@@ -31,7 +31,7 @@ const Home: NextPage = () => {
             </Link>
           </div>
           <div className="col-span-3 flex justify-center h-[300px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
-            <Image className="object-contain p-4" fill src={`data:image/jpeg;base64, ${props.productImg}`} alt="" />
+            <Image sizes="(max-width: 300px), (max-height: 300px)" className="object-contain p-4" fill src={props.productSrc} alt="" />
           </div>
         </div>
 
@@ -63,10 +63,7 @@ const Home: NextPage = () => {
               </Carousel>
             </>
           }
-        </div>
-        <div className="col-span-3 flex justify-center h-[300px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
-          <Image className="object-contain p-4" fill src="https://s3.timeweb.com/20cfe9d7-4e92dd2d-b37c-40d6-8b1c-eb18156e07b3/8d9e88d3-13d4-4b73-b8f8-0583dc6db4f7.png" alt="" />
-        </div>
+        </div>        
         {/* {isFetching && <CircularProgress color="inherit" />} */}
       </main >
     </>

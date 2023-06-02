@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, elmaProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const categoryRouter = createTRPCRouter({
     getAll: publicProcedure.query(({ ctx }) => {
@@ -19,7 +19,7 @@ export const categoryRouter = createTRPCRouter({
             })
         }),
 
-    create: publicProcedure
+    create: elmaProcedure
         .input(z.object({
             categoryId: z.string().uuid(),
             categoryName: z.string(),
@@ -42,10 +42,24 @@ export const categoryRouter = createTRPCRouter({
                                 categoryId: input.parentCategoryId,
                                 categoryName: input.categoryName,
                             },
-                        } 
+                        }
                     } : undefined
                 },
-                update: {}
+                update: {
+                    categoryId: input.categoryId,
+                    categoryName: input.categoryName,
+                    parentCategory: input.parentCategoryId != null ? {
+                        connectOrCreate: {
+                            where: {
+                                categoryId: input.parentCategoryId
+                            },
+                            create: {
+                                categoryId: input.parentCategoryId,
+                                categoryName: input.categoryName,
+                            },
+                        }
+                    } : undefined
+                }
             })
         }),
 

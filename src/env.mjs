@@ -14,7 +14,10 @@ const server = z.object({
   S3_ACCESS_KEY: z.string(),
   S3_SECRET_ACCESS_KEY: z.string(),
   S3_REGION: z.string(),
-  S3_BUCKET: z.string()
+  S3_BUCKET: z.string(),
+  S3_URL: z.string(),
+  YOOKASSA_SHOP_ID: z.string(),
+  YOOKASSA_SECRET_KEY: z.string()
 });
 
 /**
@@ -42,9 +45,10 @@ const processEnv = {
   S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
   S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
   S3_REGION: process.env.S3_REGION,
-  S3_BUCKET: process.env.S3_BUCKET
-  // DADATA_API_KEY: process.env.DADATA_API_KEY
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  S3_BUCKET: process.env.S3_BUCKET,
+  S3_URL: process.env.S3_URL,
+  YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
+  YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY
 };
 
 // Don't touch the part below

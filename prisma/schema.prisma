@@ -12,7 +12,7 @@ model Category {
   categoryId       String     @id @db.Uuid
   categoryName     String     @db.VarChar(255)
   parentCategoryId String?    @db.Uuid
-  parentCategory   Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [categoryId])
+  parentCategory   Category?  @relation("ParentCategory", fields: [parentCategoryId], references: [categoryId], onDelete: Cascade)
   childCategory    Category[] @relation("ParentCategory")
   products         Product[]
 }
@@ -25,29 +25,32 @@ model Product {
   weight          String            @db.VarChar(120)
   size            String            @db.VarChar(120)
   price           Int
-  productImg      String
+  productSrc      String
   categoryId      String            @db.Uuid
-  category        Category          @relation(fields: [categoryId], references: [categoryId])
+  category        Category          @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade)
   productsInCart  ProductsInCart[]
   productsOfOrder productsOfOrder[]
 }
 
 model Order {
-  orderId         String            @id @default(uuid()) @db.Uuid
-  summ            Int               @db.Integer
-  clientId        String            @db.Uuid
-  managerId       String?           @db.Uuid
-  orderStatus     OrderStatus
-  client          Client            @relation(fields: [clientId], references: [clientId])
-  manager         Manager?          @relation(fields: [managerId], references: [managerId])
-  productsOfOrder productsOfOrder[]
+  orderId             String                   @id @default(uuid()) @db.Uuid
+  summ                Int                      @db.Integer
+  clientId            String                   @db.Uuid
+  orderType           OrderType
+  orderStatus         OrderStatus?
+  manufacturingStatus ManufacturingOrderStatus?
+  client              Client                   @relation(fields: [clientId], references: [clientId])
+  productsOfOrder     productsOfOrder[]
+  comment             String?
+  filesSrc            String[]
+  deliveryDate        DateTime?
 }
 
 model ProductsInCart {
   clientId  String  @db.Uuid
   productId String  @db.Uuid
   client    Client  @relation(fields: [clientId], references: [clientId])
-  product   Product @relation(fields: [productId], references: [productId])
+  product   Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
   amount    Int
 
   @@id([clientId, productId])
@@ -56,8 +59,8 @@ model ProductsInCart {
 model productsOfOrder {
   productId String  @db.Uuid
   orderId   String  @default(uuid()) @db.Uuid
-  product   Product @relation(fields: [productId], references: [productId])
-  order     Order   @relation(fields: [orderId], references: [orderId])
+  product   Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  order     Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
   amount    Int
 
   @@id([productId, orderId])
@@ -77,10 +80,9 @@ model Client {
 }
 
 model Session {
-  token      String   @id @default(uuid()) @db.Uuid
-  expireDate DateTime @db.Timestamptz(3)
-  clientId   String   @unique @db.Uuid
-  client     Client   @relation(fields: [clientId], references: [clientId])
+  token    String @id @default(uuid()) @db.Uuid
+  clientId String @unique @db.Uuid
+  client   Client @relation(fields: [clientId], references: [clientId])
 }
 
 model Company {
@@ -91,19 +93,30 @@ model Company {
   clients     Client[]
 }
 
-model Manager {
-  managerId String  @id @db.Uuid
-  fullName  String  @db.VarChar(120)
-  phone     String  @db.VarChar(25)
-  email     String  @db.VarChar(100)
-  orders    Order[]
+enum OrderType {
+  order
+  manufacturing
 }
 
 enum OrderStatus {
-  distribution 
+  new
   processing
+  prepayment
+  delivery
+  postpayment
+  success
+  rejected
+}
+
+enum ManufacturingOrderStatus {
+  new
+  processing
+  costEstimate
+  approval
+  prepayment
   manufacturing
   delivery
-  close
-  canceled
+  postpayment
+  success
+  rejected
 }

@@ -24,7 +24,7 @@ export default function ProductCard({ product }: IProps) {
                                   shadow-sm
                                   grid grid-rows-12">
                     <div className="relative min-h-[200px] row-span-10">
-                        <Image className="object-contain" fill src={`data:image/jpeg;base64, ${product.productImg}`} alt=""></Image>
+                        <Image sizes="(max-width: 200px), (max-height: 200px)" className="object-contain" fill src={product.productSrc} alt=""></Image>
                     </div>
                     <div className="row-span-1 mt-2">{product.productName}</div>
                     <div className="text-end text-red-500 row-span-1">{product.price} РУБ.</div>

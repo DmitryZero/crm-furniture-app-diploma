@@ -1,7 +1,8 @@
 import { Product } from "@prisma/client";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, elmaProcedure, publicProcedure } from "~/server/api/trpc";
 import { s3router } from "./s3";
+import { env } from "~/env.mjs";
 
 export const productRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -64,7 +65,7 @@ export const productRouter = createTRPCRouter({
       })
     }),
 
-  create: publicProcedure
+  create: elmaProcedure
     .input(z.object({
       productId: z.string().uuid(),
       categoryId: z.string().uuid(),
@@ -85,8 +86,11 @@ export const productRouter = createTRPCRouter({
 
       if (res?.$metadata.httpStatusCode !== 200) return "S3 Error";
 
-      return await ctx.prisma.product.create({
-        data: {
+      return await ctx.prisma.product.upsert({
+        where: {
+          productId: input.productId
+        },
+        create: {
           productId: input.productId,
           category: {
             connect: { categoryId: input.categoryId }
@@ -97,8 +101,21 @@ export const productRouter = createTRPCRouter({
           weight: input.weight,
           size: input.size,
           price: input.price,
-          productImg: input.productImg
+          productSrc: `${env.S3_URL}/${env.S3_BUCKET}/products/${input.productId}.png`
+        },
+        update: {
+          productId: input.productId,
+          category: {
+            connect: { categoryId: input.categoryId }
+          },
+          vendorCode: input.vendorCode,
+          productName: input.productName,
+          description: input.description,
+          weight: input.weight,
+          size: input.size,
+          price: input.price,
+          productSrc: `${env.S3_URL}/${env.S3_BUCKET}/products/${input.productId}.png`
         }
       })
-    })
+    }), 
 });

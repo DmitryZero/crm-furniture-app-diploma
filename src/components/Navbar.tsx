@@ -42,7 +42,7 @@ export default function Navbar() {
                     <Link href="/userCartAndOrders" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                         <ShoppingCartIcon />
                         <Badge badgeContent={0} color="primary">
-                            Корзина
+                            Заказы
                         </Badge>
                     </Link> :
                     <button onClick={() => setOpenSignInModal(true)} className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">

@@ -1,5 +1,5 @@
 import { createTRPCRouter, elmaProcedure, protectedProcedure } from "~/server/api/trpc";
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, OrderType } from "@prisma/client";
 import { z } from "zod";
 import { elmaRouter } from "./elma";
 import { cartRouter } from "./cart";
@@ -30,7 +30,8 @@ export const orderRouter = createTRPCRouter({
                             data: input.cartProducts
                         }
                     },
-                    orderStatus: OrderStatus.distribution
+                    orderStatus: OrderStatus.new, 
+                    orderType: OrderType.order,                                       
                 }
             })
 

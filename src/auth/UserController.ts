@@ -20,7 +20,6 @@ class UserController {
 
         const session = await prisma.session.create({
             data: {
-                expireDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay()),
                 client: {
                     create: {
                         email: email,
@@ -62,8 +61,7 @@ class UserController {
                     connect: {
                         clientId: client.clientId
                     }
-                },
-                expireDate: nextMonth,
+                }
             },
             include: {
                 client: true

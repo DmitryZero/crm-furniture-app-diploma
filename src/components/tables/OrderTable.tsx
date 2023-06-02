@@ -1,4 +1,4 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import type { Order, productsOfOrder, Product } from "@prisma/client";
 import Image from 'next/image';
 
@@ -17,9 +17,9 @@ export default function OrderTable({ order }: IProps) {
                 <TableHead>
                     <TableRow>
                         <TableCell>Продукт</TableCell>
-                        <TableCell align="right">Название</TableCell>
-                        <TableCell align="right">Количество</TableCell>
-                        <TableCell align="right">Цена за 1 шт.</TableCell>
+                        <TableCell align="left">Название</TableCell>
+                        <TableCell align="center">Количество</TableCell>
+                        <TableCell align="center">Цена за 1 шт.</TableCell>
                         <TableCell align="right">Сумма</TableCell>
                     </TableRow>
                 </TableHead>
@@ -27,13 +27,17 @@ export default function OrderTable({ order }: IProps) {
                     {
                         order.productsOfOrder.map((productOfOrder) => (
                             <TableRow key={productOfOrder.productId}>
-                                <TableCell component="th" scope="row">
-                                    <Image src={`data:image/jpeg;base64, ${productOfOrder.product.productImg}`} className='rounded-full col-span-1 p-2' width={100} height={100} alt=""></Image>
+                                <TableCell component="th" scope="row" align="left">
+                                    <div className="flex justify-center h-[100px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
+                                        <Link href={`/products/${productOfOrder.productId}`} className="cursor-pointer">
+                                            <Image sizes="(max-width: 100px), (max-height: 100px)" src={productOfOrder.product.productSrc} className='object-contain p-4' fill alt=""></Image>
+                                        </Link>
+                                    </div>
                                 </TableCell>
-                                <TableCell align="right">{productOfOrder.product.productName}</TableCell>
-                                <TableCell align="right">{productOfOrder.amount}</TableCell>
-                                <TableCell align="right">{productOfOrder.product.price}</TableCell>
-                                <TableCell align="right">{productOfOrder.amount * productOfOrder.product.price}</TableCell>
+                                <TableCell align="left">{productOfOrder.product.productName}</TableCell>
+                                <TableCell align="center">{productOfOrder.amount}</TableCell>
+                                <TableCell align="center">{productOfOrder.product.price.toLocaleString()}</TableCell>
+                                <TableCell align="right">{(productOfOrder.amount * productOfOrder.product.price).toLocaleString()}</TableCell>
                             </TableRow>
                         ))
                     }

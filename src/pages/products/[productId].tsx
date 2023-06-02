@@ -40,7 +40,7 @@ const ProductPage: NextPage = () => {
                   <>
                     <div className="flex justify-center">
                       <div className="relative w-4/5 aspect-square">
-                        <Image className="object-contain" fill src={`data:image/jpeg;base64, ${product.data.productImg}`} alt="" />
+                        <Image sizes="(max-width: 90vh), (max-height: 90vh)" className="object-contain" fill src={product.data.productSrc} alt="" />
                       </div>
                     </div>
                     <div className="bg-secondary rounded-md p-4">

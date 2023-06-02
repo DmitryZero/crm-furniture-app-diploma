@@ -9,6 +9,7 @@ import handleErrors from "~/utils/handleErrors";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OrderTable from "~/components/tables/OrderTable";
 import CartTable from "~/components/tables/CartTable";
+import OrderItem from "~/components/OrderItem";
 
 const orderStatusDict = {
     distribution: "На распределении",
@@ -80,62 +81,49 @@ const UserCartAndOrdersPage: NextPage = () => {
                     <meta name="description" content="CRM Furniture" />
                 </Head>
                 <main>
-                    {
-                        cartProducts && cartProducts.length > 0 &&
-                        <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                            <div className="text-xl">Корзина пользователя</div>
-                            <div>
-                                {
-                                    cartProducts && <CartTable productsInCart={cartProducts}/>
-                                }
-                                {
-                                    cartProducts && cartProducts.length > 0 &&
-                                    <div className="font-roboto my-4">
-                                        Итого: {cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)} РУБ.
-                                    </div>
-                                }
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                {
-                                    currentEntity &&
-                                    <>
-                                        <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label={`Совершить покупку от имении ${currentEntity.companyName} ${currentEntity?.inn}`} />
-                                    </>
-                                }
-                                {
-                                    cartProducts && cartProducts.length > 0 &&
-                                    <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-primary hover:bg-accent
-                                   hover:text-black transition duration-300 ease-in-out">Заказать</button>
-                                }
-
-                            </div>
-                        </div>
-                    }
-                    {
-                        ordersApi.data && ordersApi.data.length > 0 &&
-                        <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
-                            <div className="font-roboto mb-2">Заказы пользователя</div>
+                    <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                        <div className="text-xl mb-2">Корзина пользователя</div>
+                        <div>
                             {
-                                ordersApi.data && ordersApi.data.length > 0 &&
-                                ordersApi.data.map(item => {
-                                    return (
-                                        <Accordion key={item.orderId} sx={{border: '1px solid #7C7C7C', borderRadius: '12px'}}>
-                                            <AccordionSummary
-                                                expandIcon={<ExpandMoreIcon />}
-                                                aria-controls="panel1a-content"
-                                                id="panel1a-header"
-                                            >
-                                                <Typography className="text-sm">Заказ на {item.summ} РУБ. Статус: {orderStatusDict[`${item.orderStatus}`]}</Typography>
-                                            </AccordionSummary>
-                                            <AccordionDetails>
-                                                <OrderTable order={item} />
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    );
-                                })
+                                cartProducts && cartProducts.length > 0
+                                    ? cartProducts && <CartTable setCartProducts={setCartProducts} productsInCart={cartProducts} />
+                                    : <div className="text-text text-md" >В корзине нет товаров</div>
+                            }
+                            {
+                                cartProducts && cartProducts.length > 0 &&
+                                <div className="font-roboto my-4">
+                                    Итого: {cartProducts.reduce((summ, value) => summ + value.amount * value.product.price, 0)} РУБ.
+                                </div>
                             }
                         </div>
-                    }
+                        <div className="flex flex-col gap-2">
+                            {
+                                currentEntity &&
+                                <>
+                                    <FormControlLabel control={<Switch onChange={(e) => handleSwitchChange(e)} />} label={`Совершить покупку от имении ${currentEntity.companyName} ${currentEntity?.inn}`} />
+                                </>
+                            }
+                            {
+                                cartProducts && cartProducts.length > 0 &&
+                                <button onClick={handleClick} className="p-3 w-fit rounded-xl text-white bg-primary hover:bg-accent
+                                   hover:text-black transition duration-300 ease-in-out">Заказать</button>
+                            }
+
+                        </div>
+                    </div>
+
+                    <div className="bg-secondary w-10/12 h-2/3 m-auto mt-4 rounded-lg p-4">
+                        <div className="font-roboto mb-2 text-xl">Заказы пользователя</div>
+                        {
+                            ordersApi.data && ordersApi.data.length > 0
+                                ? ordersApi.data.map(item => {
+                                    return (
+                                        <OrderItem key={item.orderId} item={item} />
+                                    );
+                                })
+                                : <div className="text-text text-md" >Нет созданных заказов</div>
+                        }
+                    </div>
                 </main>
             </CartContext.Provider >
         </>

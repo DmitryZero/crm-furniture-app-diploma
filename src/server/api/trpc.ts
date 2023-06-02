@@ -130,7 +130,7 @@ export const protectedProcedure = t.procedure.use(isAuthed);
 const isElmaTokenValid = t.middleware(async ({ next, ctx }) => {
   const { req, res } = ctx;
 
-  const authToken = req.headers.authorization?.split(' ')[1];
+  const authToken = req.headers.authorization;
   if (!authToken || authToken !== env.SHOP_TOKEN) throw new TRPCError({code: 'UNAUTHORIZED', message: "Incorrect token"});
 
   return next({
