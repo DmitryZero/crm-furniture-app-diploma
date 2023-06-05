@@ -64,7 +64,7 @@ import superjson from 'superjson'
 import { env } from "~/env.mjs";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
+  transformer: superjson,  
   errorFormatter({ shape, error }) {
     return {
       ...shape,
@@ -76,6 +76,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
     };
   },
 });
+
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -103,8 +104,8 @@ export const publicProcedure = t.procedure;
 const isAuthed = t.middleware(async ({ next, ctx }) => {
   const { req, res } = ctx;
 
-  const token = getCookie('token', { req, res})?.toString();
-  if (!token) throw new TRPCError({code: 'UNAUTHORIZED', message: "Cookie не указан"});
+  const token = getCookie('token', { req, res })?.toString();
+  if (!token) throw new TRPCError({ code: 'UNAUTHORIZED', message: "Cookie не указан" });
 
   const client = await prisma.client.findFirst({
     where: {
@@ -113,7 +114,7 @@ const isAuthed = t.middleware(async ({ next, ctx }) => {
       }
     }
   })
-  if (!client) throw new TRPCError({code: 'UNAUTHORIZED', message: "Cookie некорректный"});
+  if (!client) throw new TRPCError({ code: 'UNAUTHORIZED', message: "Cookie некорректный" });
 
   return next({
     ctx: {
@@ -131,7 +132,7 @@ const isElmaTokenValid = t.middleware(async ({ next, ctx }) => {
   const { req, res } = ctx;
 
   const authToken = req.headers.authorization;
-  if (!authToken || authToken !== env.SHOP_TOKEN) throw new TRPCError({code: 'UNAUTHORIZED', message: "Incorrect token"});
+  if (!authToken || authToken !== env.SHOP_TOKEN) throw new TRPCError({ code: 'UNAUTHORIZED', message: "Incorrect token" });
 
   return next({
     ctx: {

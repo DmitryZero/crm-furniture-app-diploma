@@ -36,7 +36,7 @@ export default function Navbar() {
                 <div className="col-span-4 text-center"></div>
                 <Link href="/productSearch" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">
                     <CategoryIcon />
-                    Категории
+                    Каталог
                 </Link>
                 {contextController.client ?
                     <Link href="/userCartAndOrders" className="col-span-2 flex items-center justify-center gap-1 hover:bg-gray-200 cursor-pointer">

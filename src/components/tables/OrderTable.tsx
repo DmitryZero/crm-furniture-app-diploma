@@ -28,9 +28,11 @@ export default function OrderTable({ order }: IProps) {
                         order.productsOfOrder.map((productOfOrder) => (
                             <TableRow key={productOfOrder.productId}>
                                 <TableCell component="th" scope="row" align="left">
-                                    <div className="flex justify-center h-[100px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
+                                    <div className="h-[100px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
                                         <Link href={`/products/${productOfOrder.productId}`} className="cursor-pointer">
-                                            <Image sizes="(max-width: 100px), (max-height: 100px)" src={productOfOrder.product.productSrc} className='object-contain p-4' fill alt=""></Image>
+                                            <div className="relative h-[100px]">
+                                                <Image src={productOfOrder.product.productSrc} className='object-contain p-4' fill alt=""></Image>
+                                            </div>
                                         </Link>
                                     </div>
                                 </TableCell>

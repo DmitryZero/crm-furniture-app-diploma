@@ -33,17 +33,21 @@ model Product {
 }
 
 model Order {
-  orderId             String                   @id @default(uuid()) @db.Uuid
-  summ                Int                      @db.Integer
-  clientId            String                   @db.Uuid
+  orderId             String               @id @default(uuid()) @db.Uuid
+  clientId            String               @db.Uuid
   orderType           OrderType
-  orderStatus         OrderStatus?
-  manufacturingStatus ManufacturingOrderStatus?
-  client              Client                   @relation(fields: [clientId], references: [clientId])
+  regularOrderStatus  RegularOrderStatus?
+  personalOrderStatus PersonalOrderStatus?
+  client              Client               @relation(fields: [clientId], references: [clientId])
   productsOfOrder     productsOfOrder[]
   comment             String?
-  filesSrc            String[]
+  clientDocuments     Document[]
   deliveryDate        DateTime?
+  orderDate           DateTime             @default(now())
+  totalSumm           Float?
+  prepaymentSumm      Float?
+  postpaymentSumm     Float?
+  payments            Payment[]
 }
 
 model ProductsInCart {
@@ -93,12 +97,47 @@ model Company {
   clients     Client[]
 }
 
-enum OrderType {
-  order
-  manufacturing
+model Document {
+  documentId   String       @id @default(uuid()) @db.Uuid
+  documentSrc  String
+  documentName String       @db.VarChar(255)
+  documentType DocumentType
+  Order        Order?       @relation(fields: [orderId], references: [orderId])
+  orderId      String?      @db.Uuid
 }
 
-enum OrderStatus {
+model Payment {
+  paymentId     String        @id @default(uuid()) @db.Uuid
+  amount        Float
+  paymentStatus PaymentStatus @default(pending)
+  paymentType   PaymentType
+  Order         Order?        @relation(fields: [orderId], references: [orderId])
+  orderId       String?       @db.Uuid
+}
+
+enum PaymentType {
+  prepayment
+  postpayment
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  canceled
+}
+
+enum DocumentType {
+  clientDocument
+  appraisal
+  contract
+}
+
+enum OrderType {
+  regularOrder
+  personalOrder
+}
+
+enum RegularOrderStatus {
   new
   processing
   prepayment
@@ -108,10 +147,10 @@ enum OrderStatus {
   rejected
 }
 
-enum ManufacturingOrderStatus {
+enum PersonalOrderStatus {
   new
   processing
-  costEstimate
+  costestimate
   approval
   prepayment
   manufacturing

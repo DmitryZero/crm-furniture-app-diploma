@@ -7,15 +7,10 @@ import { z } from "zod";
 const server = z.object({
   DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
-  HASH_KEY: z.string(),  
+  HASH_KEY: z.string(),
   DADATA_API_KEY: z.string(),
   ELMA_TOKEN: z.string(),
-  SHOP_TOKEN: z.string(),
-  S3_ACCESS_KEY: z.string(),
-  S3_SECRET_ACCESS_KEY: z.string(),
-  S3_REGION: z.string(),
-  S3_BUCKET: z.string(),
-  S3_URL: z.string(),
+  SHOP_TOKEN: z.string(),  
   YOOKASSA_SHOP_ID: z.string(),
   YOOKASSA_SECRET_KEY: z.string()
 });
@@ -27,6 +22,11 @@ const server = z.object({
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1), 
   // NEXT_PUBLIC_S3_URL: z.string() 
+  NEXT_PUBLIC_S3_ACCESS_KEY: z.string(),
+  NEXT_PUBLIC_S3_SECRET_ACCESS_KEY: z.string(),
+  NEXT_PUBLIC_S3_REGION: z.string(),
+  NEXT_PUBLIC_S3_BUCKET: z.string(),
+  NEXT_PUBLIC_S3_URL: z.string(),
 });
 
 /**
@@ -42,11 +42,11 @@ const processEnv = {
   HASH_KEY: process.env.HASH_KEY,
   ELMA_TOKEN: process.env.ELMA_TOKEN,
   SHOP_TOKEN: process.env.SHOP_TOKEN,
-  S3_ACCESS_KEY: process.env.S3_ACCESS_KEY,
-  S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
-  S3_REGION: process.env.S3_REGION,
-  S3_BUCKET: process.env.S3_BUCKET,
-  S3_URL: process.env.S3_URL,
+  NEXT_PUBLIC_S3_ACCESS_KEY: process.env.NEXT_PUBLIC_S3_ACCESS_KEY,
+  NEXT_PUBLIC_S3_SECRET_ACCESS_KEY: process.env.NEXT_PUBLIC_S3_SECRET_ACCESS_KEY,
+  NEXT_PUBLIC_S3_REGION: process.env.NEXT_PUBLIC_S3_REGION,
+  NEXT_PUBLIC_S3_BUCKET: process.env.NEXT_PUBLIC_S3_BUCKET,
+  NEXT_PUBLIC_S3_URL: process.env.NEXT_PUBLIC_S3_URL,
   YOOKASSA_SHOP_ID: process.env.YOOKASSA_SHOP_ID,
   YOOKASSA_SECRET_KEY: process.env.YOOKASSA_SECRET_KEY
 };

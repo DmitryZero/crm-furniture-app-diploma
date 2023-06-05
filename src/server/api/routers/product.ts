@@ -75,12 +75,13 @@ export const productRouter = createTRPCRouter({
       weight: z.string(),
       size: z.string(),
       price: z.number(),
-      productImg: z.string()
+      productImg: z.string(),
+      fileName: z.string(),
     }))
     .mutation(async ({ ctx, input }) => {
       const caller = s3router.createCaller(ctx);
-      const res = await caller.createFile({
-        elmaId: input.productId,
+      const res = await caller.createProductImgFromElma({
+        fileName: input.fileName,
         body: input.productImg
       });
 
@@ -101,7 +102,7 @@ export const productRouter = createTRPCRouter({
           weight: input.weight,
           size: input.size,
           price: input.price,
-          productSrc: `${env.S3_URL}/${env.S3_BUCKET}/products/${input.productId}.png`
+          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.productId}.png`
         },
         update: {
           productId: input.productId,
@@ -114,8 +115,8 @@ export const productRouter = createTRPCRouter({
           weight: input.weight,
           size: input.size,
           price: input.price,
-          productSrc: `${env.S3_URL}/${env.S3_BUCKET}/products/${input.productId}.png`
+          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.productId}.png`
         }
       })
-    }), 
+    }),
 });

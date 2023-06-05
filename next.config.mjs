@@ -27,6 +27,6 @@ const config = {
         pathname: '/20cfe9d7-4e92dd2d-b37c-40d6-8b1c-eb18156e07b3/**',
       },
     ],
-  }
+  },    
 };
 export default config;
