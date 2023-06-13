@@ -1,9 +1,7 @@
-import { ICreatePayment, YooCheckout } from '@a2seven/yoo-checkout';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { type ICreatePayment, YooCheckout } from '@a2seven/yoo-checkout';
 import { OrderType, PaymentStatus, PersonalOrderStatus, RegularOrderStatus } from '@prisma/client';
 import { z } from 'zod';
 import { env } from '~/env.mjs';
-import client from '~/s3/s3Client';
 import checkYookassaCheck from '~/schemas/yookassaCheckSchema';
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
@@ -18,7 +16,7 @@ export const yookassaRouter = createTRPCRouter({
         }))
         .mutation(async ({ input, ctx }) => {
             const checkout = new YooCheckout({ shopId: env.YOOKASSA_SHOP_ID, secretKey: env.YOOKASSA_SECRET_KEY });
-            const idempotenceKey = input.orderId + "-" + input.type;
+            const idempotenceKey = input.orderId + "_" + input.type;
 
             const createPayload: ICreatePayment = {
                 amount: {
@@ -105,7 +103,7 @@ export const yookassaRouter = createTRPCRouter({
                     )
                     : null;
 
-                const orderPrisma = await ctx.prisma.order.update({
+                await ctx.prisma.order.update({
                     where: {
                         orderId: order.orderId
                     },

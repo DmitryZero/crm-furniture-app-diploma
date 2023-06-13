@@ -1,20 +1,19 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Switch, FormControlLabel, Checkbox, TextFieldProps } from "@mui/material";
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, FormControlLabel, Checkbox } from "@mui/material";
+import type { Dispatch, SetStateAction } from "react";
+import React, { useRef, useState } from "react";
 import FileLoader from "./FileLoader";
 import { api } from "~/utils/api";
-import { Company } from "@prisma/client";
+import type { Company } from "@prisma/client";
 import handleErrors from "~/utils/handleErrors";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import client from "~/s3/s3Client";
 
 interface IProps {
     openDialog: boolean,
     setOpenDialog: Dispatch<SetStateAction<boolean>>,
     entity: Company | null,
-    setCurrentEntity: React.Dispatch<React.SetStateAction<Company | null>>
+    setCurrentEntity?: React.Dispatch<React.SetStateAction<Company | null>>
 }
 
-export default function ManufacturingOrderDialog({ openDialog, setOpenDialog, entity, setCurrentEntity }: IProps) {
+export default function ManufacturingOrderDialog({ openDialog, setOpenDialog, entity }: IProps) {
     const [files, setFiles] = useState<File[]>([]);
     const [isEntity, setIsEntity] = useState(false);
     const commentRef = useRef<HTMLInputElement>(null);
@@ -29,10 +28,10 @@ export default function ManufacturingOrderDialog({ openDialog, setOpenDialog, en
     }
 
     function _arrayBufferToBase64(buffer: ArrayBuffer) {
-        var binary = '';
-        var bytes = new Uint8Array(buffer);
-        var len = bytes.byteLength;
-        for (var i = 0; i < len; i++) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
             const number = bytes[i];
             if (number === undefined) continue;
 

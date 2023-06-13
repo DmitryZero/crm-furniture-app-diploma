@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Checkbox, FormControlLabel, Switch, Tooltip, Typography } from "@mui/material";
+import { Checkbox, FormControlLabel, Tooltip } from "@mui/material";
 import type { Company, Product, ProductsInCart, Document, Order, productsOfOrder } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -6,8 +6,6 @@ import { useState } from "react";
 import CartContext from "~/Context/CartContext";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import OrderTable from "~/components/tables/OrderTable";
 import CartTable from "~/components/tables/CartTable";
 import OrderItem from "~/components/OrderItem";
 import ChairOutlinedIcon from '@mui/icons-material/ChairOutlined';
@@ -22,14 +20,14 @@ type TOrder =
         clientDocuments: Document[];
     })
 
-const orderStatusDict = {
-    distribution: "На распределении",
-    processing: "В обработке",
-    manufacturing: "На производстве",
-    delivery: "В доставке",
-    close: "Успешно закрыто",
-    canceled: "Отменена"
-}
+// const orderStatusDict = {
+//     distribution: "На распределении",
+//     processing: "В обработке",
+//     manufacturing: "На производстве",
+//     delivery: "В доставке",
+//     close: "Успешно закрыто",
+//     canceled: "Отменена"
+// }
 
 const UserCartAndOrdersPage: NextPage = () => {
     const [cartProducts, setCartProducts] = useState<(ProductsInCart & { product: Product })[] | undefined>(undefined);

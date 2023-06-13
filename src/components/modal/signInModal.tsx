@@ -77,7 +77,7 @@ export default function SignInModal({ state, setOpen }: IProps) {
                             <TextField onChange={(e) => { setEmail(e.target.value); setIsErrorVisible(false) }} id="email" label="Email" variant="outlined" />
                             <TextField onChange={(e) => { setPassword(e.target.value); setIsErrorVisible(false) }} id="password" type="password" label="Пароль" variant="outlined" />
                             {errorVisible &&
-                                <div className="text-red-600 text-xl font-roboto ">Были указаны некорректные данные при регистрации</div>
+                                <div className="text-red-600 text-xl font-roboto ">Были указаны некорректные данные при авторизации</div>
                             }
                             <button onClick={handleClick} className='bg-blue-500 text-white self-end
                                  px-4 py-2 rounded-xl hover:bg-blue-100

@@ -3,7 +3,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import UserContext from "~/Context/UserContext";
 import { useState } from "react";
-import { Client } from "@prisma/client";
+import type { Client } from "@prisma/client";
 import Layout from "~/components/layout";
 import Spinner from "~/components/Spinner"
 

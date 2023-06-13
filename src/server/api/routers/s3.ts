@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { env } from '~/env.mjs';
 import client from '~/s3/s3Client';
 import { elmaProcedure, protectedProcedure } from '~/server/api/trpc';
-import fs from 'fs'
 
 import { createTRPCRouter } from "~/server/api/trpc";
 import { Buffer } from 'buffer';
@@ -42,7 +41,7 @@ export const s3router = createTRPCRouter({
                 });
                 const response = await client.send(command);
 
-                const document = await ctx.prisma.document.create({
+                await ctx.prisma.document.create({
                     data: {
                         documentType: "contract",
                         documentName: input.fileName,
@@ -70,17 +69,17 @@ export const s3router = createTRPCRouter({
         }))
         .mutation(async ({ input }) => {
             try {
-                const commands = input.files.map((item, index) => {
+                const commands = input.files.map((item) => {
                     if (!item.body) return undefined;
 
                     return new PutObjectCommand({
                         Bucket: env.NEXT_PUBLIC_S3_BUCKET,
                         Key: `orderFiles/${input.orderId}/${item.name}`,
-                        Body: Buffer.from(input.files[0]?.body!, "base64")
+                        Body: Buffer.from(input.files[0]?.body || "", "base64")
                     });
                 });
 
-                const arrayBuffer = input.files[0]!.body!;
+                const arrayBuffer = input.files[0]?.body || [];
                 console.log("arrayBuffer", arrayBuffer);
 
                 const buffer = Buffer.from(JSON.stringify(arrayBuffer));

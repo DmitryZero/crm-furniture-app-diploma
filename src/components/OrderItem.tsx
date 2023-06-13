@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Divider, Step, StepLabel, Stepper, Typography } from "@mui/material";
-import { Order, Product, productsOfOrder, Document } from "@prisma/client";
+import type { Order, Product, productsOfOrder, Document } from "@prisma/client";
 
 import OrderTable from "./tables/OrderTable";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import PaymentIcon from '@mui/icons-material/Payment';
 import handleErrors from "~/utils/handleErrors";
 import { api } from "~/utils/api";
-import router, { useRouter } from "next/router";
+import router from "next/router";
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import Link from "next/link";
 
@@ -76,12 +76,11 @@ export default function OrderItem({ item }: IProps) {
 
     const steps = item.orderType === "regularOrder" ? Object.values(dictOrder).slice(0, -1) : Object.values(manufacturingStatus).slice(0, -1);
 
-    const handlePayment = handleErrors(async (paymentType: string) => {
+    const handlePayment = handleErrors(async () => {
         const summ = labelStatus === "Предоплата" ? (item.prepaymentSumm || 0) : (item.postpaymentSumm || 0);
         const idempotence = labelStatus === "Предоплата" ? "prepayment" : "postpayment";
 
         const payment = await yokassa.mutateAsync({ summ: summ, orderId: item.orderId, type: idempotence });
-        console.log("payment", payment);
         if (payment?.confirmation.confirmation_url && !payment.paid) await router.push(payment?.confirmation.confirmation_url);
     })
 
@@ -97,7 +96,7 @@ export default function OrderItem({ item }: IProps) {
                         <div>
                             {
                                 orderType === "Заказ товаров"
-                                    ? `Заказ на ${item.totalSumm?.toLocaleString()} РУБ. от ${item.orderDate.toLocaleDateString()}`
+                                    ? `Заказ на ${(item.totalSumm || 0).toLocaleString()} РУБ. от ${item.orderDate.toLocaleDateString()}`
                                     : `Индвидуальный заказ от ${item.orderDate.toLocaleDateString()}`
                             }
                         </div>
@@ -134,7 +133,7 @@ export default function OrderItem({ item }: IProps) {
                                                 : item.postpaymentSumm
                                         } Руб.
                                     </div>
-                                    <Button onClick={() => handlePayment(labelStatus)} className="bg-primary border-2 border-solid text-white px-5 py-2 rounded-full hover:bg-secondary hover:border-primary hover:text-accent">
+                                    <Button onClick={handlePayment} className="bg-primary border-2 border-solid text-white px-5 py-2 rounded-full hover:bg-secondary hover:border-primary hover:text-accent">
                                         <div className="flex gap-2">
                                             <PaymentIcon /> Оплатить
                                         </div>

@@ -16,8 +16,6 @@ interface IClientSignIn {
 
 class UserController {
     static async signUp({ email, fullName, password }: IClientSignUp) {
-        const currentDate = new Date();
-
         const session = await prisma.session.create({
             data: {
                 client: {
@@ -48,9 +46,7 @@ class UserController {
         });
 
         if (!client) throw new TRPCError({ code: 'NOT_FOUND', message: 'Email invalid' })
-
-        const currentDate = new Date();
-        const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDay());
+        
         const session = await prisma.session.upsert({
             where: {
                 clientId: client.clientId

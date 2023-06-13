@@ -1,13 +1,8 @@
-import { Divider, TextField } from "@mui/material";
-import { ChangeEvent, useRef, useState } from "react";
+import { Divider } from "@mui/material";
+import type { ChangeEvent } from "react";
+import { useRef } from "react";
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { api } from "~/utils/api";
-
-interface IFile {
-    name: string,
-    file: File
-}
 
 interface IProps {
     files: File[],

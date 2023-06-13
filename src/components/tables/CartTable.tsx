@@ -2,7 +2,7 @@ import { Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Ta
 import type { Product, ProductsInCart } from "@prisma/client";
 import Image from 'next/image';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { api } from "~/utils/api";
 import handleErrors from "~/utils/handleErrors";
 

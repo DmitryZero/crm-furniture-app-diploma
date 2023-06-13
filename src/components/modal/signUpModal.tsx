@@ -84,7 +84,7 @@ export default function SignUpModal({ state, setOpen }: IProps) {
                             }
                             <button onClick={handleClick} className='bg-blue-500 text-white self-end
                                  px-4 py-2 rounded-xl hover:bg-blue-100
-                                hover:text-black transition-all'>Зарегестрироваться</button>
+                                hover:text-black transition-all'>Зарегистрироваться</button>
                         </div>
                     </Box>
                 </Fade>

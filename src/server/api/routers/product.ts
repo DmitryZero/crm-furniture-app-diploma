@@ -1,4 +1,3 @@
-import { Product } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, elmaProcedure, publicProcedure } from "~/server/api/trpc";
 import { s3router } from "./s3";
@@ -102,7 +101,7 @@ export const productRouter = createTRPCRouter({
           weight: input.weight,
           size: input.size,
           price: input.price,
-          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.productId}.png`
+          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.fileName}.png`
         },
         update: {
           productId: input.productId,
