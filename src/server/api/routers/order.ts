@@ -1,4 +1,4 @@
-import { createTRPCRouter, elmaProcedure, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, elmaProcedure, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { OrderType, PersonalOrderStatus, RegularOrderStatus } from "@prisma/client";
 import { z } from "zod";
 import { elmaRouter } from "./elma";
@@ -151,7 +151,7 @@ export const orderRouter = createTRPCRouter({
                             product: true
                         }
                     },
-                    clientDocuments: true                 
+                    clientDocuments: true
                 }
             })
 
@@ -201,6 +201,7 @@ export const orderRouter = createTRPCRouter({
         }))
         .mutation(async ({ input, ctx }) => {
             const { prisma } = ctx;
+            console.log("updateOrderData", ctx.req)
 
             const personalOrderStatus = input.personalOrderStatus ? input.personalOrderStatus : undefined;
             const regularOrderStatus = input.regularOrderStatus ? input.regularOrderStatus : undefined;
@@ -218,6 +219,6 @@ export const orderRouter = createTRPCRouter({
                     postpaymentSumm,
                 }
             })
-        })
+        }),    
 });
 

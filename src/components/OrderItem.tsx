@@ -51,7 +51,7 @@ interface IProps {
 }
 
 export default function OrderItem({ item }: IProps) {
-    const yokassa = api.yookassa.createPayment.useMutation();
+    const yokassa = api.payment.createPaymentInYookassa.useMutation();
 
     let labelStatus = "";
     let orderType: "Заказ товаров" | "Индвидуальный заказ" = "Заказ товаров";
@@ -129,8 +129,8 @@ export default function OrderItem({ item }: IProps) {
                                     <div className="text-xl font-rubik">
                                         Сумма {
                                             labelStatus === "Предоплата"
-                                                ? item.prepaymentSumm
-                                                : item.postpaymentSumm
+                                                ? item.prepaymentSumm?.toLocaleString()
+                                                : item.postpaymentSumm?.toLocaleString()
                                         } Руб.
                                     </div>
                                     <Button onClick={handlePayment} className="bg-primary border-2 border-solid text-white px-5 py-2 rounded-full hover:bg-secondary hover:border-primary hover:text-accent">

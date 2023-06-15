@@ -101,7 +101,7 @@ export const productRouter = createTRPCRouter({
           weight: input.weight,
           size: input.size,
           price: input.price,
-          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.fileName}.png`
+          productSrc: `${env.NEXT_PUBLIC_S3_URL}/${env.NEXT_PUBLIC_S3_BUCKET}/products/${input.fileName}`
         },
         update: {
           productId: input.productId,

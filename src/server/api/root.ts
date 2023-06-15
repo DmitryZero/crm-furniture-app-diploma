@@ -8,7 +8,7 @@ import { companyRouter } from "./routers/company";
 import { cartRouter } from "./routers/cart";
 import { elmaRouter } from "./routers/elma";
 import { s3router } from "./routers/s3";
-import { yookassaRouter } from "./routers/yookassa";
+import { paymentRouter } from "./routers/payment";
 
 /**
  * This is the primary router for your server.
@@ -25,7 +25,7 @@ export const appRouter = createTRPCRouter({
   cart: cartRouter,
   elma: elmaRouter,
   s3: s3router,
-  yookassa: yookassaRouter
+  payment: paymentRouter
 });
 
 // export type definition of API
