@@ -23,14 +23,14 @@ const Home: NextPage = () => {
         <div className="grid grid-cols-12 gap-2 justify-items-end">
           <div className="col-span-9">
             <div className="text-3xl font-rubik">{props.productName}</div>
-            <div>
+            <div className="">
               {props.description}
             </div>
-            <Link className="absolute bottom-4 left-3 bg-primary border-2 border-primary text-white px-5 py-2 rounded-full hover:bg-secondary hover:text-accent" href={`/products/${props.productId}`}>
-              <VisibilityIcon /> Подробнее
-            </Link>
           </div>
-          <div className="col-span-3 flex justify-center h-[300px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
+          <Link className="absolute bottom-4 left-3 bg-primary border-2 border-primary text-white px-5 py-2 rounded-full hover:bg-secondary hover:text-accent" href={`/products/${props.productId}`}>
+            <VisibilityIcon /> Подробнее
+          </Link>
+          <div className="col-span-3 flex justify-center h-[250px] relative rounded-3xl shadow-inner shadow-primary border-2 aspect-square bg-primary">
             <Image sizes="(max-width: 300px), (max-height: 300px)" className="object-contain p-4" fill src={props.productSrc} alt="" />
           </div>
         </div>
@@ -63,7 +63,7 @@ const Home: NextPage = () => {
               </Carousel>
             </>
           }
-        </div>        
+        </div>
         {/* {isFetching && <CircularProgress color="inherit" />} */}
       </main >
     </>

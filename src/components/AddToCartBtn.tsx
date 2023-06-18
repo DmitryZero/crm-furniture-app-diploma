@@ -61,7 +61,7 @@ export default function AddToCardButton({ productId }: IProps) {
     const setCountDbDebounced = useRef(debounce(changeCounterInDb, 300));
 
     return (
-        <div className='py-5'>
+        <div className='h-[40px] mt-2'>
             {contextController.client?.clientId && <div className=''>
                 {counter === 0 &&
                     <Button className='flex justify-center w-fit py-3 px-1 text-white bg-blue-400 hover:bg-red-500
