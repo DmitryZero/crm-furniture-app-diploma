@@ -52,7 +52,7 @@ export const paymentRouter = createTRPCRouter({
                 },
                 confirmation: {
                     type: 'redirect',
-                    return_url: 'http://localhost:3000/userCartAndOrders'
+                    return_url: 'http://92.51.39.189:3000/userProfile'
                 },
                 capture: true
             };
